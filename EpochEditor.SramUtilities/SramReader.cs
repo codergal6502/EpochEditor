@@ -3,9 +3,22 @@ using System.Reflection;
 
 namespace EpochEditor.SramUtilities;
 
+
+public class Sram {
+    public Sram() {
+        this.RawBytes = new byte[0x2000];
+        this.CharacterSheets = new CharacterSheet[8];
+    }
+    
+    public Byte[] RawBytes { get; private set; }
+    public CharacterSheet[] CharacterSheets { get; private set; }
+}
+
 public class SramReader
 {
-    private const int CHARACTER_COUNT = 7;
+    private const int FIRST_CHARACTER_OFFSET = 0x200;
+
+    private const int CHARACTER_SHEET_LENGTH = 0x050;
 
     private static readonly Dictionary<Byte, Char> CT_CHAR_TO_ASCII;
 
@@ -93,28 +106,44 @@ public class SramReader
         };
     }
 
-    public SramReader(Byte[] bytes) {
 
-        const int marleStart = 0x250;
+    public SramReader() { }
 
-        CharacterSheet marleCard = new CharacterSheet();
+    public Sram ReadBytes(Byte[] bytes) {
+        Sram sram = new Sram();
 
-        foreach(PropertyInfo prop in typeof(CharacterSheet).GetProperties()) {
-            CharacterCardPropertyAttribute? attr = Attribute.GetCustomAttribute(prop, typeof(CharacterCardPropertyAttribute)) as CharacterCardPropertyAttribute;
-            if (null != attr) {
-                int pos = marleStart + attr.Offset;
-
-                if (typeof(Byte) == prop.PropertyType) {
-                    Byte i8 = bytes[pos];
-                    prop.GetSetMethod()?.Invoke(marleCard, new object[] { i8 });
-                }
-                else if (typeof(Int16) == prop.PropertyType) {
-                    Int16 i16 = BitConverter.ToInt16(bytes, pos);
-                    prop.GetSetMethod()?.Invoke(marleCard, new object[] { i16 });
-                }
-            }
+        if (bytes.Length != sram.RawBytes.Length) {
+            throw new Exception($"bad length {bytes.Length}");
         }
 
-        marleCard.Name = String.Concat(bytes.Skip(0x5B0 + marleCard.NameId * 6).Take(6).TakeWhile(b => b != 0x00).Select(b => CT_CHAR_TO_ASCII[b]));
+        Buffer.BlockCopy(bytes, 0, sram.RawBytes, 0, sram.RawBytes.Length);
+
+        int currentCharacterOffset = FIRST_CHARACTER_OFFSET;
+        for (int i = 0; i < sram.CharacterSheets.Length; i++) {
+            CharacterSheet characterSheet = new CharacterSheet();
+
+            foreach(PropertyInfo prop in typeof(CharacterSheet).GetProperties()) {
+                CharacterCardPropertyAttribute? attr = Attribute.GetCustomAttribute(prop, typeof(CharacterCardPropertyAttribute)) as CharacterCardPropertyAttribute;
+                if (null != attr) {
+                    int pos = currentCharacterOffset + attr.Offset;
+
+                    if (typeof(Byte) == prop.PropertyType) {
+                        Byte i8 = bytes[pos];
+                        prop.GetSetMethod()?.Invoke(characterSheet, [i8]);
+                    }
+                    else if (typeof(Int16) == prop.PropertyType) {
+                        Int16 i16 = BitConverter.ToInt16(bytes, pos);
+                        prop.GetSetMethod()?.Invoke(characterSheet, [i16]);
+                    }
+                }
+            }
+
+            characterSheet.Name = String.Concat(bytes.Skip(0x5B0 + characterSheet.NameId * 6).Take(6).TakeWhile(b => b != 0x00).Select(b => CT_CHAR_TO_ASCII[b]));
+            sram.CharacterSheets[i] = characterSheet;
+
+            currentCharacterOffset += CHARACTER_SHEET_LENGTH;
+        }
+
+        return sram;
     }
 }

@@ -1,6 +1,8 @@
 namespace EpochEditor.SramUtilities;
 
 public class CharacterSheet {
+    public String Name { get; set; } = String.Empty;
+    
     [CharacterCardProperty(0x00)]
     public Byte NameId { get; set; }
 
@@ -8,17 +10,17 @@ public class CharacterSheet {
     public Byte CharId { get; set; }
 
     [CharacterCardProperty(0x03)]
-    public Int16 Hp { get; set; }
+    public Int16 HitPoints { get; set; }
 
     [CharacterCardProperty(0x05)]
-    public Int16 MaxHp { get; set; }
+    public Int16 MaxHitPoints { get; set; }
 
     [CharacterCardProperty(0x07)]
 
-    public Int16 MP { get; set; }
+    public Int16 MagicPoints { get; set; }
     [CharacterCardProperty(0x09)]
 
-    public Int16 MaxMP { get; set; }
+    public Int16 MaxMagicPoints { get; set; }
     [CharacterCardProperty(0x0B)]
 
     public Byte BasePower { get; set; }
@@ -86,7 +88,5 @@ public class CharacterSheet {
     public Byte CurrentDefense { get; set; }
 
     [CharacterCardProperty(0x3F)]
-    public Int16 CurrentMaxHP { get; set; }
-
-    public String Name { get; set; } = String.Empty;
+    public Int16 CurrentMaxHitPoints { get; set; }
 }
