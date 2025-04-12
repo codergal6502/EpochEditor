@@ -15,3 +15,6 @@ bld/
 
 # macOS Files
 **/.DS_Store
+
+# .vscode -- not sure if ignoring this makes sense!
+.vscode
