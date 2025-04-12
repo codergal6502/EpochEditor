@@ -17,7 +17,7 @@ public class CharacterSheetProxy : DispatchProxy
                 throw new Exception("character sheet isn't part of sram");
             }
 
-            // This is the cheap and cheerful way of doing this; a more elegant way would e do only update the bytes that are necessary.
+            // This is the cheap and cheerful way of doing this; a more elegant way would be to do only update the bytes that are necessary.
             _sram.UpdateBytesFromCharacterSheets();
         }
 
