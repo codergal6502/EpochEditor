@@ -9,7 +9,7 @@ namespace EpochEditor.Console.CommandOptions {
         [Option('p', "property", Required = false, HelpText = "The specific character property to write to.", SetName = "Data")]
         public required String Property { get; set; }
 
-        [Option('v', "value", Required = true, HelpText = "The value to write.")]
+        [Option('v', "value", Required = false, HelpText = "The value to write.")]
         public required String Value { get; set; }
     }
 }

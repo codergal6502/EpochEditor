@@ -68,6 +68,15 @@ internal class Program {
                 SramReader sr = new SramReader();
                 Sram sram = sr.ReadBytes(bytes);
 
+                var computedChecksums = sram.ComputeChecksums();
+                var readChecksums = sram.ReadChecksums();
+
+                for(int slot = 0; slot < 3; slot++) {
+                    if (computedChecksums[slot] != readChecksums[slot]) {
+                        Console.Error.WriteLine("For slot {0}, computed checksum {1} does not match read checksum {2}; continuing anyway.", slot, computedChecksums[slot], readChecksums[slot]);
+                    }
+                }
+
                 if (o.Character != null) {
                     if (0 > o.Character || o.Character >= sram.CharacterSheets.Length) {
                         Console.Error.WriteLine("Invalid character index; character index must be between 0 and {0}.", sram.CharacterSheets.Length - 1);
