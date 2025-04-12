@@ -3,26 +3,13 @@ using System.Reflection;
 
 namespace EpochEditor.SramUtilities;
 
+internal class SramConstants {
+    public const int FIRST_CHARACTER_OFFSET = 0x200;
+    public const int CHARACTER_SHEET_LENGTH = 0x050;
+    public static readonly Dictionary<Byte, Char> CT_CHAR_TO_ASCII;
+    public static readonly Dictionary<Char, Byte> ASCII_TO_CT_CHAR;
 
-public class Sram {
-    public Sram() {
-        this.RawBytes = new byte[0x2000];
-        this.CharacterSheets = new CharacterSheet[8];
-    }
-    
-    public Byte[] RawBytes { get; private set; }
-    public CharacterSheet[] CharacterSheets { get; private set; }
-}
-
-public class SramReader
-{
-    private const int FIRST_CHARACTER_OFFSET = 0x200;
-
-    private const int CHARACTER_SHEET_LENGTH = 0x050;
-
-    private static readonly Dictionary<Byte, Char> CT_CHAR_TO_ASCII;
-
-    static SramReader() {
+    static SramConstants() {
         CT_CHAR_TO_ASCII = new Dictionary<Byte, Char> {
             { 0xA0, 'A' },
             { 0xA1, 'B' },
@@ -104,9 +91,61 @@ public class SramReader
             { 0xED, '\\' },
             { 0xFF, ' ' },
         };
+        ASCII_TO_CT_CHAR = new Dictionary<Char, Byte>(CT_CHAR_TO_ASCII.Select(kvp => KeyValuePair.Create(kvp.Value, kvp.Key)));
     }
+}
 
+public class Sram {
+    public Sram() {
+        this.RawBytes = new byte[0x2000];
+        this.CharacterSheets = new ICharacterSheet[8];
+    }
+    
+    public Byte[] RawBytes { get; private set; }
+    public ICharacterSheet[] CharacterSheets { get; private set; }
 
+    public void UpdateBytesFromCharacterSheets()
+    {
+        int currentCharacterOffset = SramConstants.FIRST_CHARACTER_OFFSET;
+        for (int i = 0; i < CharacterSheets.Length; i++) {
+            ICharacterSheet characterSheet = CharacterSheets[i];
+
+            foreach(PropertyInfo prop in typeof(ICharacterSheet).GetProperties()) {
+                CharacterCardPropertyAttribute? attr = Attribute.GetCustomAttribute(prop, typeof(CharacterCardPropertyAttribute)) as CharacterCardPropertyAttribute;
+                if (null != attr) {
+                    int pos = currentCharacterOffset + attr.Offset;
+
+                    if (typeof(Byte) == prop.PropertyType) {
+                        Byte? i8 = (Byte?) prop.GetGetMethod()?.Invoke(characterSheet, []);
+
+                        if (false == i8.HasValue) { throw new Exception(); }
+
+                        RawBytes[pos] = i8.Value;
+                    }
+                    else if (typeof(Int16) == prop.PropertyType) {
+                        Int16? i16 = (Int16?) prop.GetGetMethod()?.Invoke(characterSheet, []);
+
+                        if (false == i16.HasValue) { throw new Exception(); }
+
+                        BitConverter.TryWriteBytes(new Span<byte>(RawBytes, pos, 2), i16.Value);
+                    }
+                }
+            }
+
+            Char[] nameChars = characterSheet.Name.Take(6).ToArray();
+            Byte[] nameBytes = nameChars.Select(c => SramConstants.ASCII_TO_CT_CHAR[c]).ToArray();
+            int nameLocation = 0x5B0 + characterSheet.NameId * 6;
+
+            Array.Copy(new Byte[] {0, 0, 0, 0, 0, 0}, 0, RawBytes, nameLocation, 6);
+            Array.Copy(nameBytes, 0, RawBytes, nameLocation, Math.Min(nameBytes.Length, 6));
+            
+            currentCharacterOffset += SramConstants.CHARACTER_SHEET_LENGTH;
+        }
+    }
+}
+
+public class SramReader
+{
     public SramReader() { }
 
     public Sram ReadBytes(Byte[] bytes) {
@@ -118,11 +157,11 @@ public class SramReader
 
         Buffer.BlockCopy(bytes, 0, sram.RawBytes, 0, sram.RawBytes.Length);
 
-        int currentCharacterOffset = FIRST_CHARACTER_OFFSET;
+        int currentCharacterOffset = SramConstants.FIRST_CHARACTER_OFFSET;
         for (int i = 0; i < sram.CharacterSheets.Length; i++) {
             CharacterSheet characterSheet = new CharacterSheet();
 
-            foreach(PropertyInfo prop in typeof(CharacterSheet).GetProperties()) {
+            foreach(PropertyInfo prop in typeof(ICharacterSheet).GetProperties()) {
                 CharacterCardPropertyAttribute? attr = Attribute.GetCustomAttribute(prop, typeof(CharacterCardPropertyAttribute)) as CharacterCardPropertyAttribute;
                 if (null != attr) {
                     int pos = currentCharacterOffset + attr.Offset;
@@ -138,10 +177,9 @@ public class SramReader
                 }
             }
 
-            characterSheet.Name = String.Concat(bytes.Skip(0x5B0 + characterSheet.NameId * 6).Take(6).TakeWhile(b => b != 0x00).Select(b => CT_CHAR_TO_ASCII[b]));
-            sram.CharacterSheets[i] = characterSheet;
-
-            currentCharacterOffset += CHARACTER_SHEET_LENGTH;
+            characterSheet.Name = String.Concat(bytes.Skip(0x5B0 + characterSheet.NameId * 6).Take(6).TakeWhile(b => b != 0x00).Select(b => SramConstants.CT_CHAR_TO_ASCII[b]));
+            sram.CharacterSheets[i] = CharacterSheetProxy.CreateProxy(characterSheet, sram);
+            currentCharacterOffset += SramConstants.CHARACTER_SHEET_LENGTH;
         }
 
         return sram;
