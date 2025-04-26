@@ -1,0 +1,32 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:EpochEditor.Gui.ViewModels"
+             x:Class="EpochEditor.Gui.App"
+             x:DataType="vm:ApplicationViewModel"
+             xmlns:local="using:EpochEditor.Gui"
+             RequestedThemeVariant="Default"
+             Name="Epoch Editor"
+             >
+             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+
+    <Application.DataTemplates>
+        <local:ViewLocator/>
+    </Application.DataTemplates>
+
+    <NativeMenu.Menu>
+        <NativeMenu>
+            <NativeMenuItem Header="About Epoch Editor…" />
+            <NativeMenuItem Header="File" IsEnabled="true">
+                <NativeMenu>                    
+                    <NativeMenuItem Header="_Open…"     IsEnabled="true" Click="FileOpen_OnClick" />
+                    <NativeMenuItem Header="_Save"      IsEnabled="true" Click="FileSave_OnClick" />
+                    <NativeMenuItem Header="Save _As…"  IsEnabled="true" />
+                </NativeMenu>
+            </NativeMenuItem>
+        </NativeMenu>
+    </NativeMenu.Menu>
+
+    <Application.Styles>
+        <FluentTheme />
+    </Application.Styles>
+</Application>

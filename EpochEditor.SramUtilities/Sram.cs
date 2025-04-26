@@ -18,7 +18,7 @@ public class Sram {
             ICharacterSheet characterSheet = CharacterSheets[i];
 
             foreach(PropertyInfo prop in typeof(ICharacterSheet).GetProperties()) {
-                CharacterCardPropertyAttribute? attr = Attribute.GetCustomAttribute(prop, typeof(CharacterCardPropertyAttribute)) as CharacterCardPropertyAttribute;
+                CharacterSheetPropertyAttribute? attr = Attribute.GetCustomAttribute(prop, typeof(CharacterSheetPropertyAttribute)) as CharacterSheetPropertyAttribute;
                 if (null != attr) {
                     int pos = currentCharacterOffset + attr.Offset;
 
