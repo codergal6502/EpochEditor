@@ -20,8 +20,15 @@ internal class Program {
                 SramReader sr = new SramReader();
                 Sram sram = sr.ReadBytes(bytes);
 
-                if (0 > o.Character || o.Character >= sram.CharacterSheets.Length) {
-                    Console.Error.WriteLine("Invalid character index; character index must be between 0 and {0}.", sram.CharacterSheets.Length - 1);
+                if (0 > o.Slot || o.Slot >= sram.GameSlots.Length) {
+                    Console.Error.WriteLine("Invalid slot index; slot index must be between 0 and {0}.", sram.GameSlots.Length - 1);
+                    Environment.Exit(-1);
+                }
+
+                GameSlot gameSlot = sram.GameSlots[o.Slot];
+                    
+                if (0 > o.Character || o.Character >= gameSlot.CharacterSheets.Length) {
+                    Console.Error.WriteLine("Invalid character index; character index must be between 0 and {0}.", gameSlot.CharacterSheets.Length - 1);
                     Environment.Exit(-1);
                 }
                 
@@ -33,7 +40,7 @@ internal class Program {
                     Environment.Exit(-1);
                 }
 
-                var characterSheet = sram.CharacterSheets[o.Character];
+                var characterSheet = gameSlot.CharacterSheets[o.Character];
                 
                 Object invocationParameter;
                 if (property.PropertyType == typeof(Byte)) {
@@ -68,22 +75,29 @@ internal class Program {
                 SramReader sr = new SramReader();
                 Sram sram = sr.ReadBytes(bytes);
 
-                var computedChecksums = sram.ComputeChecksums();
-                var readChecksums = sram.ReadChecksums();
+                if (0 > o.Slot || o.Slot >= sram.GameSlots.Length) {
+                    Console.Error.WriteLine("Invalid slot index; slot index must be between 0 and {0}.", sram.GameSlots.Length - 1);
+                    Environment.Exit(-1);
+                }
+
+                GameSlot gameSlot = sram.GameSlots[o.Slot];
+
+                var computedChecksum = gameSlot.ComputeChecksum();
+                var loadedChecksum = gameSlot.LoadedChecksum;
 
                 for(int slot = 0; slot < 3; slot++) {
-                    if (computedChecksums[slot] != readChecksums[slot]) {
-                        Console.Error.WriteLine("For slot {0}, computed checksum {1} does not match read checksum {2}; continuing anyway.", slot, computedChecksums[slot], readChecksums[slot]);
+                    if (computedChecksum != loadedChecksum) {
+                        Console.Error.WriteLine("For slot {0}, computed checksum {1} does not match read checksum {2}; continuing anyway.", slot, computedChecksum, loadedChecksum);
                     }
                 }
 
                 if (o.Character != null) {
-                    if (0 > o.Character || o.Character >= sram.CharacterSheets.Length) {
-                        Console.Error.WriteLine("Invalid character index; character index must be between 0 and {0}.", sram.CharacterSheets.Length - 1);
+                    if (0 > o.Character || o.Character >= gameSlot.CharacterSheets.Length) {
+                        Console.Error.WriteLine("Invalid character index; character index must be between 0 and {0}.", gameSlot.CharacterSheets.Length - 1);
                         Environment.Exit(-1);
                     }
                     else if (null == o.Property) {
-                        Console.Out.Write(JsonConvert.SerializeObject(sram.CharacterSheets[o.Character.Value], Formatting.Indented));
+                        Console.Out.Write(JsonConvert.SerializeObject(gameSlot.CharacterSheets[o.Character.Value], Formatting.Indented));
                         Environment.Exit(0);
                     }
                     else if (null != o.Property) {
@@ -95,7 +109,7 @@ internal class Program {
                             Environment.Exit(-1);
                         }
                         else {
-                            Object? propertyValue = property.GetGetMethod()?.Invoke(sram.CharacterSheets[o.Character.Value], []);
+                            Object? propertyValue = property.GetGetMethod()?.Invoke(gameSlot.CharacterSheets[o.Character.Value], []);
                             Console.Out.WriteLine(propertyValue);
                         }
                     }
@@ -110,7 +124,7 @@ internal class Program {
                     }
                     else {
                         List<Object?> properties = 
-                            sram
+                            gameSlot
                                 .CharacterSheets
                                 .Select(cs =>  property.GetGetMethod()?.Invoke(cs, []))
                                 .ToList();
@@ -118,7 +132,7 @@ internal class Program {
                     }
                 }
                 else {
-                    Console.Out.WriteLine(JsonConvert.SerializeObject(sram.CharacterSheets, Formatting.Indented));
+                    Console.Out.WriteLine(JsonConvert.SerializeObject(gameSlot.CharacterSheets, Formatting.Indented));
                 }
             });
     }

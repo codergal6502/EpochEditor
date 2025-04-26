@@ -28,6 +28,7 @@ public class SramReactiveViewModel : ReactiveObject {
 
         Characters = [ ];
         EditorGroupOptions = [ ];
+        SlotIndices = [ ];
 
         this.WhenAnyValue(o => o.EditorGroupOptionIndex).Subscribe(_ => { 
             var x = _.HasValue ? _.Value : -1;
@@ -43,19 +44,37 @@ public class SramReactiveViewModel : ReactiveObject {
         
     }
 
-    public int SlotNumber { get { return this._slotIndex; } set { this.RaiseAndSetIfChanged(ref _slotIndex, value); this.RaisePropertyChanged(nameof(SlotChecksum)); } }
+    public int SlotIndex { 
+        get {
+             return this._slotIndex;
+        }
+        set {
+            this.RaiseAndSetIfChanged(ref _slotIndex, value);
+            if (false == SramIsLoading) {
+                this.RaisePropertyChanged(nameof(SlotChecksum));
+
+                SlotIsLoading = true;
+                UpdateViewModelFromSlotIndex();
+                SlotIsLoading = false;
+            }
+        }
+    }
 
     public int? EditorGroupOptionIndex { 
         get { return this._egoi; }
         set {
-            this._egoi = value ?? throw new EpochEditorAvaloniaSetupException();
-            var selectedEgo = EditorGroupOptions[this._egoi];
-            foreach (var c in Characters) { c.ShouldBeVisible = false; }
-            if (selectedEgo is CharacterEditorGroupOption charEgo) {
-                Characters[this._egoi].ShouldBeVisible = true;
+            if (false == SlotIsLoading) {
+                this._egoi = value ?? throw new EpochEditorAvaloniaSetupException();
+                var selectedEgo = EditorGroupOptions[this._egoi];
+                foreach (var c in Characters) { c.ShouldBeVisible = false; }
+                if (selectedEgo is CharacterEditorGroupOption charEgo) {
+                    Characters[this._egoi].ShouldBeVisible = true;
+                }
             }
         } 
     }
+
+    public List<int> SlotIndices { get; private set; }
 
     public List<EditorGroupOption> EditorGroupOptions { get; private set; }
 
@@ -64,10 +83,11 @@ public class SramReactiveViewModel : ReactiveObject {
     public Sram? Sram { get { return this._sram; } set { this._sram = value; UpdateViewModelFromSram(); } }
 
     public Boolean SramIsLoading { get; set; } = true;
+    public Boolean SlotIsLoading { get; set; } = true;
 
-    public UInt16? SlotChecksum { get => ComputedChecksums?.Skip(_slotIndex)?.FirstOrDefault(); }
+    public UInt16? SlotChecksum { get => this._sram?.GameSlots?.Skip(this._slotIndex)?.FirstOrDefault()?.ComputeChecksum(); }
 
-    public IList<UInt16>? ComputedChecksums { get => Sram?.ComputeChecksums(); }
+    // public IList<UInt16>? ComputedChecksums { get => _sram. }
 
     private void UpdateViewModelFromSram()
     {
@@ -77,9 +97,23 @@ public class SramReactiveViewModel : ReactiveObject {
 
         SramIsLoading = true;
 
+        SlotIndices = this._sram.GameSlots.Select((s, i) => i).ToList();
+        this.RaisePropertyChanged(nameof(SlotIndices));
+
+        SramIsLoading = false;
+    }
+
+    private void UpdateViewModelFromSlotIndex() {
+        var sram = this._sram ?? throw new EpochEditorAvaloniaSetupException("Selecting a slot without an SRAM loaded!");
+        var gameSlot =
+            sram
+                .GameSlots
+                .Skip(_slotIndex)
+                .FirstOrDefault() ?? throw new EpochEditorAvaloniaSetupException($"Slot index {_slotIndex} exceeds number of game slots {sram.GameSlots.Length}.");
+
         List<EditorGroupOption> newEgos =
-            this
-                ._sram.CharacterSheets
+            gameSlot
+                .CharacterSheets
                 .Select((cs, i) => new CharacterEditorGroupOption { CharacterIndex = i, CharacterName = cs.Name })
                 .OfType<EditorGroupOption>()
                 .ToList();
@@ -92,8 +126,7 @@ public class SramReactiveViewModel : ReactiveObject {
         this.RaisePropertyChanged(nameof(EditorGroupOptions));
 
         Characters =
-            this
-                ._sram
+            gameSlot
                 .CharacterSheets
                 .Select((cs, i) => new CharacterReactiveViewModel(this, i, cs, false))
                 .ToList();
@@ -101,12 +134,10 @@ public class SramReactiveViewModel : ReactiveObject {
         EditorGroupOptionIndex = 0;
         this.RaisePropertyChanged(nameof(EditorGroupOptionIndex));
 
-        SramIsLoading = false;
-
-        RaiseBytecodeChange();
+        RaiseSlotChecksumChange();
     }
 
-    public void RaiseBytecodeChange()
+    public void RaiseSlotChecksumChange()
     {
         this.RaisePropertyChanged(nameof(SlotChecksum));
     }

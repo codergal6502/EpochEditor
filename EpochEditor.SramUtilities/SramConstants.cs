@@ -1,6 +1,14 @@
 namespace EpochEditor.SramUtilities;
 
 internal class SramConstants {
+    public const int SRAM_FILE_LENGTH = 0x2000;
+    public const int SLOT_COUNT = 3;
+    public const int SLOT_LENGTH = 0x0A00;
+    public const int SLOT_1_START = 0x0000;
+    public const int SLOT_2_START = 0x0A00;
+    public const int SLOT_3_START = 0x1400;
+    public const int CHECKSUM_OFFSET = 0x1FF0;
+    public const int NAME_LENGTH = 6;
     public const int FIRST_CHARACTER_OFFSET = 0x200;
     public const int CHARACTER_SHEET_LENGTH = 0x050;
     public static readonly Dictionary<Byte, Char> CT_CHAR_TO_ASCII;

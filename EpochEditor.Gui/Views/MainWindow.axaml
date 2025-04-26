@@ -17,8 +17,12 @@
     <StackPanel DataContext="{Binding SramViewModel}">
         <StackPanel Orientation="Horizontal">
             <Label Target="slotComboBox">Slot: </Label>
-            <ComboBox Name="slotComboBox" SelectedIndex="{Binding SlotNumber}">
-                <ComboBoxItem>Slot 1</ComboBoxItem>
+            <ComboBox Name="slotComboBox" SelectedIndex="{Binding SlotIndex}" ItemsSource="{Binding SlotIndices}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding ., StringFormat='Slot {0}'}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
             </ComboBox>
             <Label Target="EditorGroupSelectionComboBox">Editor Group: </Label>
             <ComboBox Name="EditorGroupSelectionComboBox" ItemsSource="{Binding EditorGroupOptions}" SelectedIndex="{Binding EditorGroupOptionIndex}">

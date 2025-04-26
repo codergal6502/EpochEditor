@@ -12,6 +12,7 @@ using Avalonia.Platform.Storage;
 using EpochEditor.SramUtilities;
 using System.Collections.Generic;
 using System.IO;
+using System;
 
 namespace EpochEditor.Gui;
 

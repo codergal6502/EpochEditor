@@ -3,6 +3,9 @@ using CommandLine;
 namespace EpochEditor.Console.CommandOptions {
     [Verb("write", HelpText = "Overwrite the SRM file.")]
     internal class WriteOptions : BaseOptions {
+        [Option('s', "slot", Required = false, HelpText = "The index of the slot to write to.", SetName = "Data")]
+        public required int Slot { get; set; }
+
         [Option('c', "character", Required = false, HelpText = "The index of the character to write to.", SetName = "Data")]
         public required int Character { get; set; }
 
