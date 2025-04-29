@@ -14,72 +14,86 @@
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-    <StackPanel DataContext="{Binding SramViewModel}">
-        <StackPanel Orientation="Horizontal">
-            <Label Target="slotComboBox">Slot: </Label>
-            <ComboBox Name="slotComboBox" SelectedIndex="{Binding SlotIndex}" ItemsSource="{Binding SlotIndices}">
-                <ComboBox.ItemTemplate>
+    <NativeMenu.Menu>
+        <NativeMenu>
+            <NativeMenuItem Header="File" IsEnabled="true">
+                <NativeMenu>                    
+                    <NativeMenuItem Header="_Open…"     IsEnabled="true" Click="FileOpen_OnClick" />
+                    <NativeMenuItem Header="_Save"      IsEnabled="true" Click="FileSave_OnClick" />
+                    <NativeMenuItem Header="Save _As…"  IsEnabled="true" />
+                </NativeMenu>
+            </NativeMenuItem>
+        </NativeMenu>
+    </NativeMenu.Menu>
+    <DockPanel>
+
+        <StackPanel DataContext="{Binding SramViewModel}">
+            <StackPanel Orientation="Horizontal">
+                <Label Target="SlotComboBox">Slot: </Label>
+                <ComboBox Name="SlotComboBox" ItemsSource="{Binding SlotOptions}" SelectedIndex="{Binding SlotSelectionIndex}" VerticalAlignment="Top">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding DisplayName}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <Label Target="EditorGroupSelectionComboBox">Editor Group: </Label>
+                <ComboBox Name="EditorGroupSelectionComboBox" ItemsSource="{Binding EditorGroupOptions}" SelectedIndex="{Binding EditorGroupSelectionIndex}" VerticalAlignment="Top">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding DisplayName}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <Label Target="SlotChecksum">Slot Checksum: </Label>
+                <TextBox Name="SlotChecksum" IsEnabled="False" Text="{Binding SlotChecksum}" />
+            </StackPanel>
+            <ItemsRepeater ItemsSource="{Binding Characters}">
+                <ItemsRepeater.ItemTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding ., StringFormat='Slot {0}'}" />
+                        <Grid ColumnDefinitions="*,*,*,*,*,*,*,*," RowDefinitions="*,*,*,*,*,*,*,*,*," Margin="4" IsVisible="{Binding ShouldBeVisible}">
+                            <Label Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" Target="CharacterNameId">Name ID:</Label>                 <TextBox       Grid.Row="0" Grid.Column="1"  Name="CharacterNameId"       IsEnabled="false" Text="{Binding NameId}" />
+                            <Label Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" Target="CharacterName">Name:</Label>                      <TextBox       Grid.Row="0" Grid.Column="3"  Name="CharacterName"         Watermark="name"  Text="{Binding Name}"   />
+                            <Label Grid.Row="0" Grid.Column="4" HorizontalAlignment="Right" Target="CharacterCharId">Character ID:</Label>            <TextBox       Grid.Row="0" Grid.Column="5"  Name="CharacterCharId"       IsEnabled="false" Text="{Binding CharId}" />
+
+                            <Label Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" Target="CharacterHitPoints">HP:</Label>                   <NumericUpDown Grid.Row="1" Grid.Column="1" Name="CharacterHitPoints"     Watermark="u16" Minimum="0" Maximum="65535" Value="{Binding HitPoints}"           Increment="1" FormatString="0" />
+                            <Label Grid.Row="1" Grid.Column="2" HorizontalAlignment="Right" Target="CharacterMaxHitPoints">Max HP:</Label>            <NumericUpDown Grid.Row="1" Grid.Column="3" Name="CharacterMaxHitPoints"  Watermark="u16" Minimum="0" Maximum="65535" Value="{Binding MaxHitPoints}"        Increment="1" FormatString="0" />
+                            <Label Grid.Row="1" Grid.Column="4" HorizontalAlignment="Right" Target="CharacterMagicPoints">MP:</Label>                 <NumericUpDown Grid.Row="1" Grid.Column="5" Name="CharacterMagicPoints"   Watermark="u16" Minimum="0" Maximum="65535" Value="{Binding MagicPoints}"         Increment="1" FormatString="0" />
+                            <Label Grid.Row="1" Grid.Column="6" HorizontalAlignment="Right" Target="MaxMagicPoints">Max MP:</Label>                   <NumericUpDown Grid.Row="1" Grid.Column="7" Name="MaxMagicPoints"         Watermark="u16" Minimum="0" Maximum="65535" Value="{Binding MaxMagicPoints}"      Increment="1" FormatString="0" />
+
+                            <Label Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" Target="BasePower">BasePower:</Label>                     <NumericUpDown Grid.Row="2" Grid.Column="1"  Name="BasePower"             Watermark="u8" Minimum="0" Maximum="255" Value="{Binding BasePower}"              Increment="1" FormatString="0" />          
+                            <Label Grid.Row="2" Grid.Column="2" HorizontalAlignment="Right" Target="BaseStamina">BaseStamina:</Label>                 <NumericUpDown Grid.Row="2" Grid.Column="3"  Name="BaseStamina"           Watermark="u8" Minimum="0" Maximum="255" Value="{Binding BaseStamina}"            Increment="1" FormatString="0" />                    
+                            <Label Grid.Row="2" Grid.Column="4" HorizontalAlignment="Right" Target="BaseSpeed">BaseSpeed:</Label>                     <NumericUpDown Grid.Row="2" Grid.Column="5"  Name="BaseSpeed"             Watermark="u8" Minimum="0" Maximum="255" Value="{Binding BaseSpeed}"              Increment="1" FormatString="0" />          
+
+                            <Label Grid.Row="3" Grid.Column="0" HorizontalAlignment="Right" Target="BaseMagic">BaseMagic:</Label>                     <NumericUpDown Grid.Row="3" Grid.Column="1" Name="BaseMagic"              Watermark="u8" Minimum="0" Maximum="255" Value="{Binding BaseMagic}"              Increment="1" FormatString="0" />        
+                            <Label Grid.Row="3" Grid.Column="2" HorizontalAlignment="Right" Target="BaseHit">BaseHit:</Label>                         <NumericUpDown Grid.Row="3" Grid.Column="3" Name="BaseHit"                Watermark="u8" Minimum="0" Maximum="255" Value="{Binding BaseHit}"                Increment="1" FormatString="0" />         
+                            <Label Grid.Row="3" Grid.Column="4" HorizontalAlignment="Right" Target="BaseEvade">BaseEvade:</Label>                     <NumericUpDown Grid.Row="3" Grid.Column="5" Name="BaseEvade"              Watermark="u8" Minimum="0" Maximum="255" Value="{Binding BaseEvade}"              Increment="1" FormatString="0" />                 
+                            <Label Grid.Row="3" Grid.Column="6" HorizontalAlignment="Right" Target="BaseMagicDefense">BaseMagicDefense:</Label>       <NumericUpDown Grid.Row="3" Grid.Column="7" Name="BaseMagicDefense"       Watermark="u8" Minimum="0" Maximum="255" Value="{Binding BaseMagicDefense}"       Increment="1" FormatString="0" />                         
+
+                            <Label Grid.Row="4" Grid.Column="0" HorizontalAlignment="Right" Target="Level">Level:</Label>                             <NumericUpDown Grid.Row="4" Grid.Column="1" Name="Level"                  Watermark="u8" Minimum="0" Maximum="255" Value="{Binding Level}"                  Increment="1" FormatString="0" />       
+                            <Label Grid.Row="4" Grid.Column="2" HorizontalAlignment="Right" Target="ExpToLevel">ExpToLevel:</Label>                   <NumericUpDown Grid.Row="4" Grid.Column="3" Name="ExpToLevel"             Watermark="u16" Minimum="0" Maximum="65535" Value="{Binding ExpToLevel}"          Increment="1" FormatString="0" />
+
+                            <Label Grid.Row="5" Grid.Column="0" HorizontalAlignment="Right" Target="Helmet">Helmet:</Label>                           <NumericUpDown Grid.Row="5" Grid.Column="1" Name="Helmet"                 Watermark="u8" Minimum="0" Maximum="255" Value="{Binding Helmet}"                 Increment="1" FormatString="0" />         
+                            <Label Grid.Row="5" Grid.Column="2" HorizontalAlignment="Right" Target="Armor">Armor:</Label>                             <NumericUpDown Grid.Row="5" Grid.Column="3" Name="Armor"                  Watermark="u8" Minimum="0" Maximum="255" Value="{Binding Armor}"                  Increment="1" FormatString="0" />       
+                            <Label Grid.Row="5" Grid.Column="4" HorizontalAlignment="Right" Target="Weapon">Weapon:</Label>                           <NumericUpDown Grid.Row="5" Grid.Column="5" Name="Weapon"                 Watermark="u8" Minimum="0" Maximum="255" Value="{Binding Weapon}"                 Increment="1" FormatString="0" />         
+                            <Label Grid.Row="5" Grid.Column="6" HorizontalAlignment="Right" Target="Relic">Relic:</Label>                             <NumericUpDown Grid.Row="5" Grid.Column="7" Name="Relic"                  Watermark="u8" Minimum="0" Maximum="255" Value="{Binding Relic}"                  Increment="1" FormatString="0" />       
+    
+                            <Label Grid.Row="6" Grid.Column="0" HorizontalAlignment="Right" Target="CurrentPower">CurrentPower:</Label>               <NumericUpDown Grid.Row="6" Grid.Column="1"  Name="CurrentPower"          Watermark="u8" Minimum="0" Maximum="255" Value="{Binding CurrentPower}"           Increment="1" FormatString="0" />          
+                            <Label Grid.Row="6" Grid.Column="2" HorizontalAlignment="Right" Target="CurrentStamina">CurrentStamina:</Label>           <NumericUpDown Grid.Row="6" Grid.Column="3"  Name="CurrentStamina"        Watermark="u8" Minimum="0" Maximum="255" Value="{Binding CurrentStamina}"         Increment="1" FormatString="0" />                    
+                            <Label Grid.Row="6" Grid.Column="4" HorizontalAlignment="Right" Target="CurrentSpeed">CurrentSpeed:</Label>               <NumericUpDown Grid.Row="6" Grid.Column="5"  Name="CurrentSpeed"          Watermark="u8" Minimum="0" Maximum="255" Value="{Binding CurrentSpeed}"           Increment="1" FormatString="0" />          
+
+                            <Label Grid.Row="7" Grid.Column="0" HorizontalAlignment="Right" Target="CurrentMagic">CurrentMagic:</Label>               <NumericUpDown Grid.Row="7" Grid.Column="1"  Name="CurrentMagic"          Watermark="u8" Minimum="0" Maximum="255" Value="{Binding CurrentMagic}"           Increment="1" FormatString="0" />      
+                            <Label Grid.Row="7" Grid.Column="2" HorizontalAlignment="Right" Target="CurrentHit">CurrentHit:</Label>                   <NumericUpDown Grid.Row="7" Grid.Column="3"  Name="CurrentHit"            Watermark="u8" Minimum="0" Maximum="255" Value="{Binding CurrentHit}"             Increment="1" FormatString="0" />       
+                            <Label Grid.Row="7" Grid.Column="4" HorizontalAlignment="Right" Target="CurrentEvade">CurrentEvade:</Label>               <NumericUpDown Grid.Row="7" Grid.Column="5" Name="CurrentEvade"           Watermark="u8" Minimum="0" Maximum="255" Value="{Binding CurrentEvade}"           Increment="1" FormatString="0" />               
+                            <Label Grid.Row="7" Grid.Column="6" HorizontalAlignment="Right" Target="CurrentMagicDefense">CurrentMagicDefense:</Label> <NumericUpDown Grid.Row="7" Grid.Column="7" Name="CurrentMagicDefense"    Watermark="u8" Minimum="0" Maximum="255" Value="{Binding CurrentMagicDefense}"    Increment="1" FormatString="0" />                        
+
+                            <Label Grid.Row="8" Grid.Column="0" HorizontalAlignment="Right" Target="CurrentAttack">CurrentAttack:</Label>             <NumericUpDown Grid.Row="8" Grid.Column="1" Name="CurrentAttack"          Watermark="u8"  Minimum="0" Maximum="255"   Value="{Binding CurrentAttack}"       Increment="1" FormatString="0" />      
+                            <Label Grid.Row="8" Grid.Column="2" HorizontalAlignment="Right" Target="CurrentDefense">CurrentDefense:</Label>           <NumericUpDown Grid.Row="8" Grid.Column="3" Name="CurrentDefense"         Watermark="u8"  Minimum="0" Maximum="255"   Value="{Binding CurrentDefense}"      Increment="1" FormatString="0" />     
+                            <Label Grid.Row="8" Grid.Column="4" HorizontalAlignment="Right" Target="CurrentMaxHitPoints">CurrentMaxHitPoints:</Label> <NumericUpDown Grid.Row="8" Grid.Column="5" Name="CurrentMaxHitPoints"    Watermark="u16" Minimum="0" Maximum="65535" Value="{Binding CurrentMaxHitPoints}" Increment="1" FormatString="0" />                 
+                        </Grid>
                     </DataTemplate>
-                </ComboBox.ItemTemplate>
-            </ComboBox>
-            <Label Target="EditorGroupSelectionComboBox">Editor Group: </Label>
-            <ComboBox Name="EditorGroupSelectionComboBox" ItemsSource="{Binding EditorGroupOptions}" SelectedIndex="{Binding EditorGroupOptionIndex}">
-                <ComboBox.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding DisplayName}" />
-                    </DataTemplate>
-                </ComboBox.ItemTemplate>
-            </ComboBox>
-            <Label Target="SlotChecksum">Slot Checksum</Label>
-            <TextBox Name="SlotChecksum" IsEnabled="False" Text="{Binding SlotChecksum}" />
+                </ItemsRepeater.ItemTemplate>
+            </ItemsRepeater>
         </StackPanel>
-        <ItemsRepeater ItemsSource="{Binding Characters}">
-            <ItemsRepeater.ItemTemplate>
-                <DataTemplate>
-                    <Grid ColumnDefinitions="*,*,*,*,*,*,*,*," RowDefinitions="*,*,*,*,*,*,*,*,*," Margin="4" IsVisible="{Binding ShouldBeVisible}">
-                        <Label Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" Target="CharacterNameId">Name ID:</Label>                 <TextBox       Grid.Row="0" Grid.Column="1"  Name="CharacterNameId"       IsEnabled="false" Text="{Binding NameId}" />
-                        <Label Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" Target="CharacterName">Name:</Label>                      <TextBox       Grid.Row="0" Grid.Column="3"  Name="CharacterName"         Watermark="name"  Text="{Binding Name}"   />
-                        <Label Grid.Row="0" Grid.Column="4" HorizontalAlignment="Right" Target="CharacterCharId">Character ID:</Label>            <TextBox       Grid.Row="0" Grid.Column="5"  Name="CharacterCharId"       IsEnabled="false" Text="{Binding CharId}" />
-
-                        <Label Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" Target="CharacterHitPoints">HP:</Label>                   <NumericUpDown Grid.Row="1" Grid.Column="1" Name="CharacterHitPoints"     Watermark="u16" Minimum="0" Maximum="65535" Value="{Binding HitPoints}"           Increment="1" FormatString="0" />
-                        <Label Grid.Row="1" Grid.Column="2" HorizontalAlignment="Right" Target="CharacterMaxHitPoints">Max HP:</Label>            <NumericUpDown Grid.Row="1" Grid.Column="3" Name="CharacterMaxHitPoints"  Watermark="u16" Minimum="0" Maximum="65535" Value="{Binding MaxHitPoints}"        Increment="1" FormatString="0" />
-                        <Label Grid.Row="1" Grid.Column="4" HorizontalAlignment="Right" Target="CharacterMagicPoints">MP:</Label>                 <NumericUpDown Grid.Row="1" Grid.Column="5" Name="CharacterMagicPoints"   Watermark="u16" Minimum="0" Maximum="65535" Value="{Binding MagicPoints}"         Increment="1" FormatString="0" />
-                        <Label Grid.Row="1" Grid.Column="6" HorizontalAlignment="Right" Target="MaxMagicPoints">Max MP:</Label>                   <NumericUpDown Grid.Row="1" Grid.Column="7" Name="MaxMagicPoints"         Watermark="u16" Minimum="0" Maximum="65535" Value="{Binding MaxMagicPoints}"      Increment="1" FormatString="0" />
-
-                        <Label Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" Target="BasePower">BasePower:</Label>                     <NumericUpDown Grid.Row="2" Grid.Column="1"  Name="BasePower"             Watermark="u8" Minimum="0" Maximum="255" Value="{Binding BasePower}"              Increment="1" FormatString="0" />          
-                        <Label Grid.Row="2" Grid.Column="2" HorizontalAlignment="Right" Target="BaseStamina">BaseStamina:</Label>                 <NumericUpDown Grid.Row="2" Grid.Column="3"  Name="BaseStamina"           Watermark="u8" Minimum="0" Maximum="255" Value="{Binding BaseStamina}"            Increment="1" FormatString="0" />                    
-                        <Label Grid.Row="2" Grid.Column="4" HorizontalAlignment="Right" Target="BaseSpeed">BaseSpeed:</Label>                     <NumericUpDown Grid.Row="2" Grid.Column="5"  Name="BaseSpeed"             Watermark="u8" Minimum="0" Maximum="255" Value="{Binding BaseSpeed}"              Increment="1" FormatString="0" />          
-
-                        <Label Grid.Row="3" Grid.Column="0" HorizontalAlignment="Right" Target="BaseMagic">BaseMagic:</Label>                     <NumericUpDown Grid.Row="3" Grid.Column="1" Name="BaseMagic"              Watermark="u8" Minimum="0" Maximum="255" Value="{Binding BaseMagic}"              Increment="1" FormatString="0" />        
-                        <Label Grid.Row="3" Grid.Column="2" HorizontalAlignment="Right" Target="BaseHit">BaseHit:</Label>                         <NumericUpDown Grid.Row="3" Grid.Column="3" Name="BaseHit"                Watermark="u8" Minimum="0" Maximum="255" Value="{Binding BaseHit}"                Increment="1" FormatString="0" />         
-                        <Label Grid.Row="3" Grid.Column="4" HorizontalAlignment="Right" Target="BaseEvade">BaseEvade:</Label>                     <NumericUpDown Grid.Row="3" Grid.Column="5" Name="BaseEvade"              Watermark="u8" Minimum="0" Maximum="255" Value="{Binding BaseEvade}"              Increment="1" FormatString="0" />                 
-                        <Label Grid.Row="3" Grid.Column="6" HorizontalAlignment="Right" Target="BaseMagicDefense">BaseMagicDefense:</Label>       <NumericUpDown Grid.Row="3" Grid.Column="7" Name="BaseMagicDefense"       Watermark="u8" Minimum="0" Maximum="255" Value="{Binding BaseMagicDefense}"       Increment="1" FormatString="0" />                         
-
-                        <Label Grid.Row="4" Grid.Column="0" HorizontalAlignment="Right" Target="Level">Level:</Label>                             <NumericUpDown Grid.Row="4" Grid.Column="1" Name="Level"                  Watermark="u8" Minimum="0" Maximum="255" Value="{Binding Level}"                  Increment="1" FormatString="0" />       
-                        <Label Grid.Row="4" Grid.Column="2" HorizontalAlignment="Right" Target="ExpToLevel">ExpToLevel:</Label>                   <NumericUpDown Grid.Row="4" Grid.Column="3" Name="ExpToLevel"             Watermark="u16" Minimum="0" Maximum="65535" Value="{Binding ExpToLevel}"          Increment="1" FormatString="0" />
-
-                        <Label Grid.Row="5" Grid.Column="0" HorizontalAlignment="Right" Target="Helmet">Helmet:</Label>                           <NumericUpDown Grid.Row="5" Grid.Column="1" Name="Helmet"                 Watermark="u8" Minimum="0" Maximum="255" Value="{Binding Helmet}"                 Increment="1" FormatString="0" />         
-                        <Label Grid.Row="5" Grid.Column="2" HorizontalAlignment="Right" Target="Armor">Armor:</Label>                             <NumericUpDown Grid.Row="5" Grid.Column="3" Name="Armor"                  Watermark="u8" Minimum="0" Maximum="255" Value="{Binding Armor}"                  Increment="1" FormatString="0" />       
-                        <Label Grid.Row="5" Grid.Column="4" HorizontalAlignment="Right" Target="Weapon">Weapon:</Label>                           <NumericUpDown Grid.Row="5" Grid.Column="5" Name="Weapon"                 Watermark="u8" Minimum="0" Maximum="255" Value="{Binding Weapon}"                 Increment="1" FormatString="0" />         
-                        <Label Grid.Row="5" Grid.Column="6" HorizontalAlignment="Right" Target="Relic">Relic:</Label>                             <NumericUpDown Grid.Row="5" Grid.Column="7" Name="Relic"                  Watermark="u8" Minimum="0" Maximum="255" Value="{Binding Relic}"                  Increment="1" FormatString="0" />       
- 
-                        <Label Grid.Row="6" Grid.Column="0" HorizontalAlignment="Right" Target="CurrentPower">CurrentPower:</Label>               <NumericUpDown Grid.Row="6" Grid.Column="1"  Name="CurrentPower"          Watermark="u8" Minimum="0" Maximum="255" Value="{Binding CurrentPower}"           Increment="1" FormatString="0" />          
-                        <Label Grid.Row="6" Grid.Column="2" HorizontalAlignment="Right" Target="CurrentStamina">CurrentStamina:</Label>           <NumericUpDown Grid.Row="6" Grid.Column="3"  Name="CurrentStamina"        Watermark="u8" Minimum="0" Maximum="255" Value="{Binding CurrentStamina}"         Increment="1" FormatString="0" />                    
-                        <Label Grid.Row="6" Grid.Column="4" HorizontalAlignment="Right" Target="CurrentSpeed">CurrentSpeed:</Label>               <NumericUpDown Grid.Row="6" Grid.Column="5"  Name="CurrentSpeed"          Watermark="u8" Minimum="0" Maximum="255" Value="{Binding CurrentSpeed}"           Increment="1" FormatString="0" />          
-
-                        <Label Grid.Row="7" Grid.Column="0" HorizontalAlignment="Right" Target="CurrentMagic">CurrentMagic:</Label>               <NumericUpDown Grid.Row="7" Grid.Column="1"  Name="CurrentMagic"          Watermark="u8" Minimum="0" Maximum="255" Value="{Binding CurrentMagic}"           Increment="1" FormatString="0" />      
-                        <Label Grid.Row="7" Grid.Column="2" HorizontalAlignment="Right" Target="CurrentHit">CurrentHit:</Label>                   <NumericUpDown Grid.Row="7" Grid.Column="3"  Name="CurrentHit"            Watermark="u8" Minimum="0" Maximum="255" Value="{Binding CurrentHit}"             Increment="1" FormatString="0" />       
-                        <Label Grid.Row="7" Grid.Column="4" HorizontalAlignment="Right" Target="CurrentEvade">CurrentEvade:</Label>               <NumericUpDown Grid.Row="7" Grid.Column="5" Name="CurrentEvade"           Watermark="u8" Minimum="0" Maximum="255" Value="{Binding CurrentEvade}"           Increment="1" FormatString="0" />               
-                        <Label Grid.Row="7" Grid.Column="6" HorizontalAlignment="Right" Target="CurrentMagicDefense">CurrentMagicDefense:</Label> <NumericUpDown Grid.Row="7" Grid.Column="7" Name="CurrentMagicDefense"    Watermark="u8" Minimum="0" Maximum="255" Value="{Binding CurrentMagicDefense}"    Increment="1" FormatString="0" />                        
-
-                        <Label Grid.Row="8" Grid.Column="0" HorizontalAlignment="Right" Target="CurrentAttack">CurrentAttack:</Label>             <NumericUpDown Grid.Row="8" Grid.Column="1" Name="CurrentAttack"          Watermark="u8"  Minimum="0" Maximum="255"   Value="{Binding CurrentAttack}"       Increment="1" FormatString="0" />      
-                        <Label Grid.Row="8" Grid.Column="2" HorizontalAlignment="Right" Target="CurrentDefense">CurrentDefense:</Label>           <NumericUpDown Grid.Row="8" Grid.Column="3" Name="CurrentDefense"         Watermark="u8"  Minimum="0" Maximum="255"   Value="{Binding CurrentDefense}"      Increment="1" FormatString="0" />     
-                        <Label Grid.Row="8" Grid.Column="4" HorizontalAlignment="Right" Target="CurrentMaxHitPoints">CurrentMaxHitPoints:</Label> <NumericUpDown Grid.Row="8" Grid.Column="5" Name="CurrentMaxHitPoints"    Watermark="u16" Minimum="0" Maximum="65535" Value="{Binding CurrentMaxHitPoints}" Increment="1" FormatString="0" />                 
-                    </Grid>
-                </DataTemplate>
-            </ItemsRepeater.ItemTemplate>
-        </ItemsRepeater>
-    </StackPanel>    
+    </DockPanel>    
 </Window>

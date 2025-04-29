@@ -11,7 +11,7 @@ public class CharacterEditorGroupOption : EditorGroupOption {
 
     public String? CharacterName { get; set; }
 
-    public override string DisplayName => $"Character {CharacterIndex} ({CharacterName})";
+    public override string DisplayName => String.IsNullOrWhiteSpace(CharacterName) ? $"Character {CharacterIndex}" : $"Character {CharacterIndex} ({CharacterName})";
 }
 
 // This isn't yet supported; comment this back in when it is.

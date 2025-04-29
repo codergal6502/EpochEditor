@@ -14,69 +14,19 @@ namespace EpochEditor.Gui.ViewModels;
 
 public class SramReactiveViewModel : ReactiveObject {
 
-    private Sram? _sram;
-    private IMapper _characterMapper;
-    private int _egoi;
-    private int _slotIndex = 0;
-    private IList<ushort> _checksums;
+    private Sram?           _sram;
+    private IList<SlotOption> _slotOptions = [];
+    private IList<EditorGroupOption> _editorGroupOptions = [];
+    private int _slotSelectionIndex = -1;
+    private int _editorGroupSelectionIndex = -1;
 
     public SramReactiveViewModel() {
         this._sram = null;
 
         var config = new MapperConfiguration(cfg => cfg.CreateMap<ICharacterSheet, CharacterReactiveViewModel>());
-        this._characterMapper = config.CreateMapper();
 
         Characters = [ ];
-        EditorGroupOptions = [ ];
-        SlotIndices = [ ];
-
-        this.WhenAnyValue(o => o.EditorGroupOptionIndex).Subscribe(_ => { 
-            var x = _.HasValue ? _.Value : -1;
-         });
-
-        this._checksums = [0, 0, 0];
-
-        this.PropertyChanged += OnPropertyChanged;
     }
-
-    private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        
-    }
-
-    public int SlotIndex { 
-        get {
-             return this._slotIndex;
-        }
-        set {
-            this.RaiseAndSetIfChanged(ref _slotIndex, value);
-            if (false == SramIsLoading) {
-                this.RaisePropertyChanged(nameof(SlotChecksum));
-
-                SlotIsLoading = true;
-                UpdateViewModelFromSlotIndex();
-                SlotIsLoading = false;
-            }
-        }
-    }
-
-    public int? EditorGroupOptionIndex { 
-        get { return this._egoi; }
-        set {
-            if (false == SlotIsLoading) {
-                this._egoi = value ?? throw new EpochEditorAvaloniaSetupException();
-                var selectedEgo = EditorGroupOptions[this._egoi];
-                foreach (var c in Characters) { c.ShouldBeVisible = false; }
-                if (selectedEgo is CharacterEditorGroupOption charEgo) {
-                    Characters[this._egoi].ShouldBeVisible = true;
-                }
-            }
-        } 
-    }
-
-    public List<int> SlotIndices { get; private set; }
-
-    public List<EditorGroupOption> EditorGroupOptions { get; private set; }
 
     public IList<CharacterReactiveViewModel> Characters { get; private set; }
 
@@ -85,45 +35,43 @@ public class SramReactiveViewModel : ReactiveObject {
     public Boolean SramIsLoading { get; set; } = true;
     public Boolean SlotIsLoading { get; set; } = true;
 
-    public UInt16? SlotChecksum { get => this._sram?.GameSlots?.Skip(this._slotIndex)?.FirstOrDefault()?.ComputeChecksum(); }
+    public UInt16? SlotChecksum { get => this._sram?.GameSlots?.Skip(this._slotSelectionIndex)?.FirstOrDefault()?.ComputeChecksum(); }
 
-    // public IList<UInt16>? ComputedChecksums { get => _sram. }
+    public IList<SlotOption> SlotOptions { get => _slotOptions; set => this.RaiseAndSetIfChanged(ref _slotOptions, value); }
+
+    public IList<EditorGroupOption> EditorGroupOptions { get => _editorGroupOptions; set => this.RaiseAndSetIfChanged(ref _editorGroupOptions, value); }
+
+    public int SlotSelectionIndex { get => _slotSelectionIndex; set { this.RaiseAndSetIfChanged(ref _slotSelectionIndex, value); this.RaisePropertyChanged(nameof(SlotChecksum)); UpdateEditorGroupUiElements(); } }
+
+    public int EditorGroupSelectionIndex { get => _editorGroupSelectionIndex; set { this.RaiseAndSetIfChanged(ref _editorGroupSelectionIndex, value); UpdateCharacterSheetVisibility(); } }
 
     private void UpdateViewModelFromSram()
     {
         if (null == this._sram) {
-            throw new EpochEditorException("Cannot update viewmodel from NULL SRAM.");
+            throw new EpochEditorException("Cannot update viewmodel from null SRAM.");
         }
 
         SramIsLoading = true;
-
-        SlotIndices = this._sram.GameSlots.Select((s, i) => i).ToList();
-        this.RaisePropertyChanged(nameof(SlotIndices));
-
+        SlotOptions =
+            this
+                ._sram
+                .GameSlots
+                .Select((s, i) => new SlotOption { SlotIndex = i })
+                .ToList();
         SramIsLoading = false;
     }
 
-    private void UpdateViewModelFromSlotIndex() {
-        var sram = this._sram ?? throw new EpochEditorAvaloniaSetupException("Selecting a slot without an SRAM loaded!");
-        var gameSlot =
-            sram
-                .GameSlots
-                .Skip(_slotIndex)
-                .FirstOrDefault() ?? throw new EpochEditorAvaloniaSetupException($"Slot index {_slotIndex} exceeds number of game slots {sram.GameSlots.Length}.");
+    public void RaiseSlotChecksumChange()
+    {
+        this.RaisePropertyChanged(nameof(SlotChecksum));
+    }
 
-        List<EditorGroupOption> newEgos =
-            gameSlot
-                .CharacterSheets
-                .Select((cs, i) => new CharacterEditorGroupOption { CharacterIndex = i, CharacterName = cs.Name })
-                .OfType<EditorGroupOption>()
-                .ToList();
+    private void UpdateEditorGroupUiElements() {
+        if (0 > this._slotSelectionIndex || this._slotSelectionIndex >= this._slotOptions.Count) {
+            return;
+        }
 
-        // This isn't yet supported; comment this back in when it is.
-        // newEgos.Add(new SlotEditorGroupOption { Group = "Inventory" });
-        // newEgos.Add(new SlotEditorGroupOption { Group = "The Rest" });
-
-        EditorGroupOptions = newEgos;
-        this.RaisePropertyChanged(nameof(EditorGroupOptions));
+        var gameSlot = this._sram?.GameSlots[this._slotSelectionIndex] ?? throw new EpochEditorAvaloniaSetupException();
 
         Characters =
             gameSlot
@@ -131,14 +79,26 @@ public class SramReactiveViewModel : ReactiveObject {
                 .Select((cs, i) => new CharacterReactiveViewModel(this, i, cs, false))
                 .ToList();
         this.RaisePropertyChanged(nameof(Characters));
-        EditorGroupOptionIndex = 0;
-        this.RaisePropertyChanged(nameof(EditorGroupOptionIndex));
+        
+        var oldEditorGroupSelectionIndex = EditorGroupSelectionIndex;
+        this._editorGroupOptions = new List<EditorGroupOption>();
+        for (var i = 0; i < gameSlot.CharacterSheets.Length; i++)
+        {
+            var character = gameSlot.CharacterSheets[i];
+            this._editorGroupOptions.Add(new CharacterEditorGroupOption { CharacterName = character.Name, CharacterIndex = i });
+        }
 
-        RaiseSlotChecksumChange();
+        this.RaisePropertyChanged(nameof(EditorGroupOptions));
+        
+        EditorGroupSelectionIndex = oldEditorGroupSelectionIndex;
     }
 
-    public void RaiseSlotChecksumChange()
-    {
-        this.RaisePropertyChanged(nameof(SlotChecksum));
+    private void UpdateCharacterSheetVisibility() {
+        if (0 > this._editorGroupSelectionIndex || this._editorGroupSelectionIndex >= this.EditorGroupOptions.Count) {
+            return;
+        }
+        
+        foreach (var c in Characters) { c.ShouldBeVisible = false; }
+        Characters[_editorGroupSelectionIndex].ShouldBeVisible = true;
     }
 }

@@ -1,5 +1,6 @@
 namespace EpochEditor.SramUtilities;
 
+// See https://datacrystal.tcrf.net/wiki/Chrono_Trigger_(SNES)/RAM_map.
 public interface ICharacterSheet
 {
     string Name { get; set; }

@@ -92,6 +92,9 @@ public class GameSlot {
     public UInt16 ComputeChecksum() {
         UInt32 checksum = 0;
 
+        // See https://github.com/mcred/chrono-trigger-save-editor/blob/master/internal/app/Editor.go#L80.
+        // See https://github.com/mikearnos/snessum/blob/master/snessum.c#L145
+
         for (int i = 0x9FE; i >= 0; i -= 2) {
             if (checksum > 0xFFFF) {
                 checksum -= 0xFFFF;

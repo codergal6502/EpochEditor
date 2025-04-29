@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Data;
 using System.Linq;
 using System.Reflection;
 using DynamicData.Binding;
@@ -26,7 +27,33 @@ public class CharacterReactiveViewModel : ReactiveObject {
 
     public bool ShouldBeVisible { get => _shouldBeVisible; set => this.RaiseAndSetIfChanged(ref _shouldBeVisible, value); }
 
-    public string   Name                { get { return SramCharacterSheet.Name;                } set { if (false == SramViewModel.SramIsLoading && SramCharacterSheet.Name != value)                { SramCharacterSheet.Name = value;                SramViewModel.RaiseSlotChecksumChange(); this.RaisePropertyChanged(); } } }
+    public string Name {
+        get {
+            return SramCharacterSheet.Name;
+        }
+        set {
+            if (false == SramViewModel.SramIsLoading && SramCharacterSheet.Name != value) {
+                SramCharacterSheet.Name = value;
+                CopyNameToCharactersWithSameNameIndex();                
+                SramViewModel.RaiseSlotChecksumChange();
+                this.RaisePropertyChanged();
+            }
+        }
+    }
+
+    private void CopyNameToCharactersWithSameNameIndex() {
+        foreach (var otherCharacterSheet in this.SramViewModel.Characters) {
+            if (Object.ReferenceEquals(this, otherCharacterSheet)) {
+                continue;
+            }
+            else {
+                if (otherCharacterSheet.NameId == this.NameId) {
+                    otherCharacterSheet.Name = this.Name;
+                }
+            }
+        }
+    }
+
     public byte     NameId              { get { return SramCharacterSheet.NameId;              } set { if (false == SramViewModel.SramIsLoading && SramCharacterSheet.NameId != value)              { SramCharacterSheet.NameId = value;              SramViewModel.RaiseSlotChecksumChange(); this.RaisePropertyChanged(); } } }
     public byte     CharId              { get { return SramCharacterSheet.CharId;              } set { if (false == SramViewModel.SramIsLoading && SramCharacterSheet.CharId != value)              { SramCharacterSheet.CharId = value;              SramViewModel.RaiseSlotChecksumChange(); this.RaisePropertyChanged(); } } }
     public short    HitPoints           { get { return SramCharacterSheet.HitPoints;           } set { if (false == SramViewModel.SramIsLoading && SramCharacterSheet.HitPoints != value)           { SramCharacterSheet.HitPoints = value;           SramViewModel.RaiseSlotChecksumChange(); this.RaisePropertyChanged(); } } }
