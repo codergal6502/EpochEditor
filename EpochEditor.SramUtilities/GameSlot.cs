@@ -2,31 +2,9 @@ using System.Reflection;
 
 namespace EpochEditor.SramUtilities;
 
-public class Sram {
-    public Sram() {
-        // See https://datacrystal.tcrf.net/wiki/Chrono_Trigger_(SNES)/RAM_map.
-
-        this.RawBytes = new byte[0x2000];
-        this.GameSlots = [new GameSlot(RawBytes, 0, SramConstants.SLOT_1_START), new GameSlot(RawBytes, 1, SramConstants.SLOT_2_START), new GameSlot(RawBytes, 2, SramConstants.SLOT_3_START)];
-    }
-    
-    public Byte[] RawBytes { get; }
-
-    public Byte LastSave { get; set; }
-
-    public GameSlot[] GameSlots { get; }
-
-    public Byte LastSaveSlotIndex { get => this.RawBytes[SramConstants.LAST_SAVE_SLOT_INDEX_LOCATION]; set => this.RawBytes[SramConstants.LAST_SAVE_SLOT_INDEX_LOCATION] = value; }
-
-    public void UpdateBytes() {
-        for(var slotIndex = 0; slotIndex < GameSlots.Length; slotIndex++) {
-            var gameSlot = GameSlots[slotIndex];
-            gameSlot.UpdateBytesFromCharacterSheets();
-        }
-    }
-}
-
 public class GameSlot {
+    private const int SIZE_OF_16_BITS = sizeof(UInt16); // It's just 2, but I find magic numbers confusing.
+    private const int SIZE_OF_32_BITS = sizeof(UInt32); // It's just 4, but I find magic numbers confusing.
     private readonly Byte[] _rawBytes;
     private readonly int _slotIndex;
     private readonly int _slotOffset;
@@ -35,12 +13,142 @@ public class GameSlot {
         this._rawBytes = rawBytes;
         this._slotIndex = slotIndex;
         this.CharacterSheets = new ICharacterSheet[8];
-        this.Inventory = new InventoryItem[256];
+        this.Inventory = new InventoryItem[SramConstants.INVENTORY_SIZE];
         this._slotOffset = slotOffset;
     }
 
     public ICharacterSheet[] CharacterSheets { get; }
     public InventoryItem[] Inventory { get; }
+
+    // Through experimenting with a hex editor, the following values in 0x580 result in these parties:
+    //
+    // 00 80 80: Crono
+    // 00 01 80: Crono  Marle
+    // 00 02 80: Crono  Lucca
+    // 00 03 80: Crono  R66-Y
+    // 80 05 06: Ayla   Magus
+    // 04 05 06: Frog   Ayla   Magus
+    // 06 05 04: Magus  Ayla   Frog
+    // 
+    // I'm assuming then that 0x80 means "nobody" and that 0x00-0x06 just mean characters 1-6.
+
+    private Byte? GetPartyMember(int partyMemberOffset) {
+        Byte characterIndex = this._rawBytes[this._slotOffset + partyMemberOffset];
+        if (characterIndex > SramConstants.MAX_CHARACTER_INDEX) {
+            return null;
+        }
+        else {
+            return characterIndex;
+        }
+    }
+
+    private void SetPartyMember(int partyMemberOffset, Byte? charcterIndex) {
+        Byte byteToWrite = SramConstants.EMPTY_PARTY_SLOT;
+        if (null != charcterIndex) {
+            if (0 <= charcterIndex && charcterIndex <= SramConstants.MAX_CHARACTER_INDEX) {
+                byteToWrite = charcterIndex.Value;
+            }
+        }
+
+        this._rawBytes[this._slotOffset + partyMemberOffset] = byteToWrite;
+    }
+
+    public Byte? PartyMemberOne   {
+        get {
+            return GetPartyMember(SramConstants.PARTY_MEMBER_ONE_OFFSET);
+        }
+        set { 
+            SetPartyMember(SramConstants.PARTY_MEMBER_ONE_OFFSET, value);
+            UpdateChecksumBytes();
+        } 
+    }
+
+    public Byte? PartyMemberTwo   {
+        get {
+            return GetPartyMember(SramConstants.PARTY_MEMBER_TWO_OFFSET);
+        }
+        set { 
+            SetPartyMember(SramConstants.PARTY_MEMBER_TWO_OFFSET, value);
+            UpdateChecksumBytes();
+        } 
+    }
+
+    public Byte? PartyMemberThree   {
+        get {
+            return GetPartyMember(SramConstants.PARTY_MEMBER_THREE_OFFSET);
+        }
+        set { 
+            SetPartyMember(SramConstants.PARTY_MEMBER_THREE_OFFSET, value);
+            UpdateChecksumBytes();
+        } 
+    }
+
+    public Byte? SaveCount {
+        get {
+            return this._rawBytes[this._slotOffset + SramConstants.SAVE_COUNT_OFFSET];
+        }
+        set {
+            this._rawBytes[this._slotOffset + SramConstants.SAVE_COUNT_OFFSET] = value ?? SramConstants.MINIMUM_SAVE_COUNT;
+            UpdateChecksumBytes();
+        }
+    }
+
+    public Byte? PlayerX {
+        get {
+            return this._rawBytes[this._slotOffset + SramConstants.PLAYER_X_OFFSET];
+        }
+        set {
+            this._rawBytes[this._slotOffset + SramConstants.PLAYER_X_OFFSET] = value ?? default;
+            UpdateChecksumBytes();
+        }
+    }
+
+    public Byte? PlayerY {
+        get {
+            return this._rawBytes[this._slotOffset + SramConstants.PLAYER_Y_OFFSET];
+        }
+        set {
+            this._rawBytes[this._slotOffset + SramConstants.PLAYER_Y_OFFSET] = value ?? default;
+            UpdateChecksumBytes();
+        }
+    }
+
+    public UInt32? Gold {
+        get {
+            var sramGoldBytes = this._rawBytes.AsSpan(this._slotOffset + SramConstants.GOLD_OFFSET, SramConstants.GOLD_LENGTH);
+            Byte[] valueIntBytes = new Byte[SIZE_OF_32_BITS];
+            sramGoldBytes.CopyTo(valueIntBytes);
+            return BitConverter.ToUInt32(valueIntBytes);
+        }
+        set {
+            UInt32 valueToStore;
+
+            if (null == value) valueToStore = 0;
+            else if (value > SramConstants.GOLD_MAX) valueToStore = SramConstants.GOLD_MAX;
+            else valueToStore = value.Value;
+
+            Byte[] tooManyBytes = new Byte[SIZE_OF_32_BITS];
+            BitConverter.TryWriteBytes(tooManyBytes, valueToStore);
+            var justRightBytes = tooManyBytes.AsSpan(0, SramConstants.GOLD_LENGTH);
+            var sramGoldBytes = this._rawBytes.AsSpan(this._slotOffset + SramConstants.GOLD_OFFSET, SramConstants.GOLD_LENGTH);
+            
+            justRightBytes.CopyTo(sramGoldBytes);
+
+            UpdateChecksumBytes();
+        }
+    }
+    
+    public UInt16? World { 
+        get {
+            return BitConverter.ToUInt16(_rawBytes, SramConstants.WORLD_OFFSET);
+        }
+        set {
+            if (null != value) {
+                BitConverter.TryWriteBytes(new Span<byte>(_rawBytes, SramConstants.WORLD_OFFSET, SIZE_OF_16_BITS), value.Value);
+                UpdateChecksumBytes();
+            }
+        }
+    }
 
     public void UpdateBytesFromCharacterSheets()
     {

@@ -1,6 +1,10 @@
+// See https://datacrystal.tcrf.net/wiki/Chrono_Trigger_(SNES)/RAM_map
+
+using System.Reflection.Metadata;
+
 namespace EpochEditor.SramUtilities;
 
-internal class SramConstants {
+public class SramConstants {
     public const int SRAM_FILE_LENGTH = 0x2000;
     public const int SLOT_COUNT = 3;
     public const int SLOT_LENGTH = 0x0A00;
@@ -14,6 +18,20 @@ internal class SramConstants {
     public const int INVENTORY_COUNT_START_OFFSET = 0x100;
     public const int INVENTORY_SIZE = 0x100;
     public const int LAST_SAVE_SLOT_INDEX_LOCATION = 0x1FE0;
+    public const int PARTY_MEMBER_ONE_OFFSET = 0x580;
+    public const int PARTY_MEMBER_TWO_OFFSET = 0x581;
+    public const int PARTY_MEMBER_THREE_OFFSET = 0x582;
+    public const int MAX_CHARACTER_INDEX = 6;
+    public const int EMPTY_PARTY_SLOT = 0x80;
+    public const int SAVE_COUNT_OFFSET = 0x59C;
+    public const byte MINIMUM_SAVE_COUNT = 1;
+    public const int GOLD_OFFSET = 0x5E0;
+    public const int GOLD_LENGTH = 3;
+    public const UInt32 GOLD_MAX = 9999999;
+    public const int WORLD_OFFSET = 0x5F3;
+    public const int PLAYER_X_OFFSET = 0x5F5;
+    public const int PLAYER_Y_OFFSET = 0x5F6;
+
     public static readonly Dictionary<Byte, Char> CT_CHAR_TO_ASCII;
     public static readonly Dictionary<Char, Byte> ASCII_TO_CT_CHAR;
 

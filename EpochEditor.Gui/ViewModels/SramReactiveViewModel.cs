@@ -28,19 +28,21 @@ public class SramReactiveViewModel : ReactiveObject {
 
         Characters = [ ];
         
-        GameStateViewModel = new();
-        InventoryViewModel = null;
+        GameStateViewModel = new(this, null);
+        InventoryViewModel = new(this, []);
     }
 
     public InventoryViewModel? InventoryViewModel { get; set; }
 
     public IList<CharacterReactiveViewModel> Characters { get; private set; }
     
-    public GameStateViewModel GameStateViewModel { get; private set; }
+    public GameStateViewModel? GameStateViewModel { get; private set; }
 
     public Sram? Sram { get { return this._sram; } set { this._sram = value; UpdateViewModelFromSram(); } }
 
     public Boolean SramIsLoading { get; set; } = true;
+
+    public Boolean IsSlotUpdating { get; set; } = true;
 
     public UInt16? SlotChecksum { get => this._sram?.GameSlots?.Skip(this._slotSelectionIndex)?.FirstOrDefault()?.ComputeChecksum(); }
 
@@ -80,7 +82,7 @@ public class SramReactiveViewModel : ReactiveObject {
         if (0 > this._slotSelectionIndex || this._slotSelectionIndex >= this._slotOptions.Count) {
             return;
         }
-
+        this.IsSlotUpdating = true;
         var gameSlot = this._sram?.GameSlots[this._slotSelectionIndex] ?? throw new EpochEditorAvaloniaSetupException();
 
         Characters =
@@ -93,6 +95,9 @@ public class SramReactiveViewModel : ReactiveObject {
         this.InventoryViewModel = new InventoryViewModel(this, gameSlot.Inventory);
         this.RaisePropertyChanged(nameof(InventoryViewModel));
         
+        this.GameStateViewModel = new GameStateViewModel(this, gameSlot);
+        this.RaisePropertyChanged(nameof(GameStateViewModel));
+
         var oldEditorGroupSelectionIndex = EditorGroupSelectionIndex;
         this._editorGroupOptions = new List<EditorGroupOption>();
         for (var i = 0; i < gameSlot.CharacterSheets.Length; i++)
@@ -108,6 +113,7 @@ public class SramReactiveViewModel : ReactiveObject {
         this.RaisePropertyChanged(nameof(EditorGroupOptions));
         
         EditorGroupSelectionIndex = oldEditorGroupSelectionIndex;
+        IsSlotUpdating = false;
     }
 
     private void UpdateEditorGroupVisibility() {
@@ -119,7 +125,7 @@ public class SramReactiveViewModel : ReactiveObject {
 
         foreach (var c in Characters) { c.ShouldBeVisible = false; }
         // this.PlaceholderViewModel.ShouldBeVisible = false;
-        this.GameStateViewModel.ShouldBeVisible = false;
+        if (null != GameStateViewModel) GameStateViewModel.ShouldBeVisible = false;
         if (null != InventoryViewModel) InventoryViewModel.ShouldBeVisible = false;
         
         if (selectedEditorGroup is CharacterEditorGroupOption characterEditorGroup) {
@@ -133,16 +139,10 @@ public class SramReactiveViewModel : ReactiveObject {
                     break;
                 }
                 case SlotEditorGroupOption.SlotEditorGroupType.GameState: {
-                    this.GameStateViewModel.ShouldBeVisible = true;
+                    if (null != GameStateViewModel) GameStateViewModel.ShouldBeVisible = true;
                     break;
                 }
             }
         }
     }
-}
-
-public class GameStateViewModel : ReactiveObject
-{
-    private bool _shouldBeVisible;
-    public Boolean ShouldBeVisible { get => _shouldBeVisible; set => this.RaiseAndSetIfChanged(ref _shouldBeVisible, value); }
 }
