@@ -6,4 +6,14 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Content Remove="ItemList.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ItemList.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="newtonsoft.json" Version="13.0.3" />
+  </ItemGroup>
+
 </Project>

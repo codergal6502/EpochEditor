@@ -33,35 +33,40 @@ public class GameSlot {
         this._rawBytes = rawBytes;
         this._slotIndex = slotIndex;
         this.CharacterSheets = new ICharacterSheet[8];
+        this.Inventory = new InventoryItem[256];
         this._slotOffset = slotOffset;
     }
 
     public ICharacterSheet[] CharacterSheets { get; }
-
-
+    public InventoryItem[] Inventory { get; }
 
     public void UpdateBytesFromCharacterSheets()
     {
         Span<Byte> slotSpan = new Span<byte>(_rawBytes, this._slotOffset, SramConstants.SLOT_LENGTH);
-        
+
         int currentCharacterOffset = SramConstants.FIRST_CHARACTER_OFFSET;
-        for (int i = 0; i < CharacterSheets.Length; i++) {
+        for (int i = 0; i < CharacterSheets.Length; i++)
+        {
             ICharacterSheet characterSheet = CharacterSheets[i];
 
-            foreach(PropertyInfo prop in typeof(ICharacterSheet).GetProperties()) {
+            foreach (PropertyInfo prop in typeof(ICharacterSheet).GetProperties())
+            {
                 CharacterSheetPropertyAttribute? attr = Attribute.GetCustomAttribute(prop, typeof(CharacterSheetPropertyAttribute)) as CharacterSheetPropertyAttribute;
-                if (null != attr) {
+                if (null != attr)
+                {
                     int pos = currentCharacterOffset + attr.Offset;
 
-                    if (typeof(Byte) == prop.PropertyType) {
-                        Byte? i8 = (Byte?) prop.GetGetMethod()?.Invoke(characterSheet, []);
+                    if (typeof(Byte) == prop.PropertyType)
+                    {
+                        Byte? i8 = (Byte?)prop.GetGetMethod()?.Invoke(characterSheet, []);
 
                         if (false == i8.HasValue) { throw new Exception(); }
 
                         slotSpan[pos] = i8.Value;
                     }
-                    else if (typeof(Int16) == prop.PropertyType) {
-                        Int16? i16 = (Int16?) prop.GetGetMethod()?.Invoke(characterSheet, []);
+                    else if (typeof(Int16) == prop.PropertyType)
+                    {
+                        Int16? i16 = (Int16?)prop.GetGetMethod()?.Invoke(characterSheet, []);
 
                         if (false == i16.HasValue) { throw new Exception(); }
 
@@ -75,18 +80,46 @@ public class GameSlot {
             int nameLocation = 0x5B0 + characterSheet.NameId * 6;
 
             var nameSpan = slotSpan.Slice(nameLocation, SramConstants.NAME_LENGTH);
-            new Byte[] {0, 0, 0, 0, 0, 0}.CopyTo(nameSpan);
+            new Byte[] { 0, 0, 0, 0, 0, 0 }.CopyTo(nameSpan);
             nameBytes.CopyTo(nameSpan);
-            
+
             currentCharacterOffset += SramConstants.CHARACTER_SHEET_LENGTH;
         }
 
-        var checksumPosition = 0x1FF0 + _slotIndex * 2;
+        UpdateChecksumBytes();
+    }
+
+    public void UpdateBytesFromItemId(int itemSlotNumber)
+    {
+        if (0 > itemSlotNumber || itemSlotNumber > SramConstants.INVENTORY_SIZE) {
+            throw new Exception($"Item slot number {itemSlotNumber} not between 0 and {SramConstants.INVENTORY_SIZE}.");
+        }
+
+        // The inventory item IDs literally start at byte 0 in the slot.
+        _rawBytes[_slotOffset + itemSlotNumber] = this.Inventory[itemSlotNumber].ItemId;
         
+        UpdateChecksumBytes();
+    }
+
+    public void UpdateBytesFromItemCount(int itemSlotNumber)
+    {
+        if (0 > itemSlotNumber || itemSlotNumber > SramConstants.INVENTORY_SIZE) {
+            throw new Exception($"Item slot number {itemSlotNumber} not between 0 and {SramConstants.INVENTORY_SIZE}.");
+        }
+
+        _rawBytes[_slotOffset + SramConstants.INVENTORY_COUNT_START_OFFSET + itemSlotNumber] = this.Inventory[itemSlotNumber].ItemCount;
+        
+        UpdateChecksumBytes();
+    }
+
+    private void UpdateChecksumBytes()
+    {
+        var checksumPosition = 0x1FF0 + _slotIndex * 2;
+
         Span<byte> checksumSpan = new(_rawBytes, checksumPosition, 2);
         BitConverter.TryWriteBytes(new Span<byte>(_rawBytes, checksumPosition, 2), ComputeChecksum());
     }
-
+    
     public UInt16? LoadedChecksum { get; set; }
 
     public UInt16 ComputeChecksum() {

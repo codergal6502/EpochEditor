@@ -24,13 +24,13 @@ public class CharacterSheetProxy : DispatchProxy
         return result;
     }
 
-    public static ICharacterSheet CreateProxy(CharacterSheet target, GameSlot sram)
+    public static ICharacterSheet CreateProxy(CharacterSheet target, GameSlot gameSlot)
     {
         if (null == target) {
             throw new Exception();
         }
 
-        if (null == sram) {
+        if (null == gameSlot) {
             throw new Exception();
         }
 
@@ -38,7 +38,7 @@ public class CharacterSheetProxy : DispatchProxy
 
         if (proxy is ICharacterSheet) {
             proxy._target = target;
-            proxy._gameSlot = sram;
+            proxy._gameSlot = gameSlot;
             return (ICharacterSheet)proxy;
         }
         else {

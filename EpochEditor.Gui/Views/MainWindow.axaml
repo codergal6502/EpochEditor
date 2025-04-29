@@ -94,6 +94,24 @@
                     </DataTemplate>
                 </ItemsRepeater.ItemTemplate>
             </ItemsRepeater>
+            <StackPanel DataContext="{Binding InventoryViewModel}" IsVisible="{Binding ShouldBeVisible}">
+                <ItemsRepeater ItemsSource="{Binding InventoryItems}">    
+                    <ItemsRepeater.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Margin="5">
+                                <ComboBox Width="150" SelectedIndex="{Binding GameItemIndex}" ItemsSource="{Binding GameItemOptions}">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding DisplayName}" />
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                                <NumericUpDown Width="100" Value="{Binding ItemCount}" Minimum="1" Maximum="99" Increment="1" FormatString="0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsRepeater.ItemTemplate>
+                </ItemsRepeater>
+            </StackPanel>
         </StackPanel>
     </DockPanel>    
 </Window>

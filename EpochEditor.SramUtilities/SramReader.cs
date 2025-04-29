@@ -20,6 +20,14 @@ public class SramReader
                 throw new Exception($"bad length {bytes.Length}");
             }
 
+            for(int i = 0; i < SramConstants.INVENTORY_SIZE; i++) {
+                gameSlot.Inventory[i] = new InventoryItem(
+                    gameSlot
+                  , bytes[currentSlotOffset + i]
+                  , bytes[currentSlotOffset + SramConstants.INVENTORY_COUNT_START_OFFSET + i]
+                );
+            }
+
             int currentCharacterOffset = SramConstants.FIRST_CHARACTER_OFFSET;
             for (int i = 0; i < gameSlot.CharacterSheets.Length; i++) {
                 CharacterSheet characterSheet = new CharacterSheet();
