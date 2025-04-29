@@ -9,15 +9,17 @@ namespace EpochEditor.Gui.ViewModels;
 public class GameStateViewModel : ReactiveObject
 {
     private bool _shouldBeVisible;
-    private readonly SramReactiveViewModel _sramReactiveViewModel;
+    private readonly GameSlotViewModel _gameSlotViewModel;
     private readonly GameSlot? _gameSlot;
 
-    public GameStateViewModel(SramReactiveViewModel sramReactiveViewModel, GameSlot? gameSlot) {
-        this._sramReactiveViewModel = sramReactiveViewModel;
+    // Display Logic Properties
+    public Boolean ShouldBeVisible { get => _shouldBeVisible; set => this.RaiseAndSetIfChanged(ref _shouldBeVisible, value); }
+
+
+    public GameStateViewModel(GameSlotViewModel gameSlotViewModel, GameSlot? gameSlot) {
+        this._gameSlotViewModel = gameSlotViewModel;
         this._gameSlot = gameSlot;
     }
-
-    public Boolean ShouldBeVisible { get => _shouldBeVisible; set => this.RaiseAndSetIfChanged(ref _shouldBeVisible, value); }
 
     private GameSlot GetNotNullGameSlot()
     {
@@ -27,7 +29,7 @@ public class GameStateViewModel : ReactiveObject
     public int PartyMemberOneComboBoxIndex { 
         get
         {
-            if (false == _sramReactiveViewModel?.SramIsLoading) {
+            if (false == _gameSlotViewModel?.IsSramLoading()) {
                 GameSlot gameSlot = GetNotNullGameSlot();
                 var options = PartyMemberOptions;
                 var selected = options.Where(pmo => pmo.Index == gameSlot.PartyMemberOne).SingleOrDefault();
@@ -40,7 +42,8 @@ public class GameStateViewModel : ReactiveObject
             }
         }
         set {
-            if (false == this._sramReactiveViewModel.IsSlotUpdating) {
+            if (value == -1) { return; }
+            // if (false == this._gameSlotViewModel.IsSlotUpdating) {
                 var valueToStore = 0 > value || value > PartyMemberOptions.Count ? 0 : value;
                 var selected = PartyMemberOptions[valueToStore];
                 GameSlot gameSlot = GetNotNullGameSlot();
@@ -48,16 +51,16 @@ public class GameStateViewModel : ReactiveObject
                 if (gameSlot.PartyMemberOne != selected.Index) {
                     gameSlot.PartyMemberOne = selected.Index;
                     this.RaisePropertyChanged();
-                    _sramReactiveViewModel.RaiseSlotChecksumChange();
+                    _gameSlotViewModel.RaiseSlotChecksumChange();
                 }
-            }
+            // }
         }
     }
 
     public int PartyMemberTwoComboBoxIndex { 
         get
         {
-            if (false == _sramReactiveViewModel?.SramIsLoading) {
+            if (false == _gameSlotViewModel?.IsSramLoading()) {
                 GameSlot gameSlot = GetNotNullGameSlot();
                 var options = PartyMemberOptions;
                 var selected = options.Where(pmo => pmo.Index == gameSlot.PartyMemberTwo).SingleOrDefault();
@@ -70,6 +73,7 @@ public class GameStateViewModel : ReactiveObject
             }
         }
         set {
+            if (value == -1) { return; }
             var valueToStore = 0 > value || value > PartyMemberOptions.Count ? 0 : value;
             var selected = PartyMemberOptions[valueToStore];
             GameSlot gameSlot = GetNotNullGameSlot();
@@ -77,7 +81,7 @@ public class GameStateViewModel : ReactiveObject
             if (gameSlot.PartyMemberTwo != selected.Index) {
                 gameSlot.PartyMemberTwo = selected.Index;
                 this.RaisePropertyChanged();
-                _sramReactiveViewModel.RaiseSlotChecksumChange();
+                _gameSlotViewModel.RaiseSlotChecksumChange();
             }
         }
     }
@@ -85,7 +89,7 @@ public class GameStateViewModel : ReactiveObject
     public int PartyMemberThreeComboBoxIndex { 
         get
         {
-            if (false == _sramReactiveViewModel?.SramIsLoading) {
+            if (false == _gameSlotViewModel?.IsSramLoading()) {
                 GameSlot gameSlot = GetNotNullGameSlot();
                 var options = PartyMemberOptions;
                 var selected = options.Where(pmo => pmo.Index == gameSlot.PartyMemberThree).SingleOrDefault();
@@ -98,6 +102,7 @@ public class GameStateViewModel : ReactiveObject
             }
         }
         set {
+            if (value == -1) { return; }
             var valueToStore = 0 > value || value > PartyMemberOptions.Count ? 0 : value;
             var selected = PartyMemberOptions[valueToStore];
             GameSlot gameSlot = GetNotNullGameSlot();
@@ -105,7 +110,7 @@ public class GameStateViewModel : ReactiveObject
             if (gameSlot.PartyMemberThree != selected.Index) {
                 gameSlot.PartyMemberThree = selected.Index;
                 this.RaisePropertyChanged();
-                _sramReactiveViewModel.RaiseSlotChecksumChange();
+                _gameSlotViewModel.RaiseSlotChecksumChange();
             }
         }
     }
@@ -114,7 +119,7 @@ public class GameStateViewModel : ReactiveObject
 
     public List<PartyMemberOption> PartyMemberOptions {
         get {
-            if (false == _sramReactiveViewModel?.SramIsLoading) {
+            if (false == _gameSlotViewModel?.IsSramLoading()) {
                 List<PartyMemberOption> result = new List<PartyMemberOption>();
                 result.Add(new PartyMemberOption { Index = null });
                 var optionsForCharacters = GetNotNullGameSlot().CharacterSheets.Select((cs, i) => new PartyMemberOption { Index = (Byte) i, Name = cs.Name } );
@@ -133,7 +138,7 @@ public class GameStateViewModel : ReactiveObject
             if (null != _gameSlot && value != _gameSlot.SaveCount) {
                 _gameSlot.SaveCount = value;
                 this.RaisePropertyChanged();
-                this._sramReactiveViewModel.RaiseSlotChecksumChange();
+                this._gameSlotViewModel.RaiseSlotChecksumChange();
             }
         }
     }
@@ -146,7 +151,7 @@ public class GameStateViewModel : ReactiveObject
             if (null != _gameSlot && value != _gameSlot.Gold) {
                 _gameSlot.Gold = value;
                 this.RaisePropertyChanged();
-                this._sramReactiveViewModel.RaiseSlotChecksumChange();
+                this._gameSlotViewModel.RaiseSlotChecksumChange();
             }
         }
     }
@@ -161,7 +166,7 @@ public class GameStateViewModel : ReactiveObject
             if (null != _gameSlot && value != _gameSlot.World) {
                 _gameSlot.World = value;
                 this.RaisePropertyChanged();
-                this._sramReactiveViewModel.RaiseSlotChecksumChange();
+                this._gameSlotViewModel.RaiseSlotChecksumChange();
             }
         }
     }
@@ -172,7 +177,7 @@ public class GameStateViewModel : ReactiveObject
             if (null != _gameSlot && value != _gameSlot.PlayerX) {
                 _gameSlot.PlayerX = value;
                 this.RaisePropertyChanged();
-                this._sramReactiveViewModel.RaiseSlotChecksumChange();
+                this._gameSlotViewModel.RaiseSlotChecksumChange();
             }
         }
     }
@@ -183,7 +188,7 @@ public class GameStateViewModel : ReactiveObject
             if (null != _gameSlot && value != _gameSlot.PlayerY) {
                 _gameSlot.PlayerY = value;
                 this.RaisePropertyChanged();
-                this._sramReactiveViewModel.RaiseSlotChecksumChange();
+                this._gameSlotViewModel.RaiseSlotChecksumChange();
             }
         }
     }

@@ -25,8 +25,8 @@ public partial class MainWindow : Window
         if (this.DataContext is MainWindowViewModel mainWindowViewModel) {
             var ofp = (this._storageProvider ?? throw new EpochEditorAvaloniaSetupException()).OpenFilePickerAsync(new FilePickerOpenOptions {
                 AllowMultiple = false
-            , FileTypeFilter = [ new FilePickerFileType("SNES Save RAM File") { Patterns = [ "*.srm" ] }]
-            , Title = "Open SNES Save RAM File…"
+              , FileTypeFilter = [ new FilePickerFileType("SNES Save RAM File") { Patterns = [ "*.srm" ] }]
+              , Title = "Open SNES Save RAM File…"
             });
 
             ofp.ContinueWith(afpTask => {
@@ -37,9 +37,7 @@ public partial class MainWindow : Window
 
                     var f = r.SingleOrDefault();
                     if (null != f) {
-                        SramReader sr = new SramReader();
-                        mainWindowViewModel.Sram = sr.ReadBytes(File.ReadAllBytes(f.Path.LocalPath));
-                        mainWindowViewModel.CurrentPath = f.Path.LocalPath;
+                        mainWindowViewModel.LoadSram(f.Path.LocalPath);
                     }
                 }
             });
@@ -48,12 +46,7 @@ public partial class MainWindow : Window
 
     public void FileSave_OnClick(object? sender, System.EventArgs args) {
         if (this.DataContext is MainWindowViewModel mainWindowViewModel) {
-            if (null != mainWindowViewModel?.CurrentPath && null != mainWindowViewModel.Sram) {
-                File.WriteAllBytes(
-                    mainWindowViewModel.CurrentPath ?? throw new EpochEditorAvaloniaSetupException($"Cannot save with null {nameof(mainWindowViewModel.CurrentPath)}")
-                  , mainWindowViewModel.Sram?.RawBytes ?? throw new EpochEditorAvaloniaSetupException($"Cannot save with null {nameof(mainWindowViewModel.Sram.RawBytes)} or null {nameof(mainWindowViewModel.Sram.RawBytes)}.")
-                );
-            }
+            mainWindowViewModel.SaveToCurrentPath();
         }
     }
 
@@ -67,12 +60,8 @@ public partial class MainWindow : Window
             sfp.ContinueWith(afpTask => {
                 if (afpTask.IsCompletedSuccessfully) {
                     if (afpTask.Result is IStorageFile file) {
-                        mainWindowViewModel.CurrentPath = file.Path.LocalPath;
-
-                        File.WriteAllBytes(
-                            mainWindowViewModel.CurrentPath ?? throw new EpochEditorAvaloniaSetupException($"Cannot save as with null {nameof(mainWindowViewModel.CurrentPath)}")
-                        , mainWindowViewModel.Sram?.RawBytes ?? throw new EpochEditorAvaloniaSetupException($"Cannot save as with null {nameof(mainWindowViewModel.Sram.RawBytes)} or null {nameof(mainWindowViewModel.Sram.RawBytes)}.")
-                        );
+                        
+                        mainWindowViewModel.SaveToNewPathPath(file.Path.LocalPath);
                     }
                 }
             });
