@@ -18,9 +18,9 @@
         <NativeMenu>
             <NativeMenuItem Header="File" IsEnabled="true">
                 <NativeMenu>                    
-                    <NativeMenuItem Header="_Open…"     IsEnabled="true" Click="FileOpen_OnClick" />
-                    <NativeMenuItem Header="_Save"      IsEnabled="true" Click="FileSave_OnClick" />
-                    <NativeMenuItem Header="Save _As…"  IsEnabled="true" />
+                    <NativeMenuItem Header="_Open…"     Click="FileOpen_OnClick"   IsEnabled="true"  />
+                    <NativeMenuItem Header="_Save"      Click="FileSave_OnClick"   IsEnabled="{Binding HasFileBeenLoaded}" />
+                    <NativeMenuItem Header="Save _As…"  Click="FileSaveAs_OnClick" IsEnabled="{Binding HasFileBeenLoaded}" />
                 </NativeMenu>
             </NativeMenuItem>
         </NativeMenu>

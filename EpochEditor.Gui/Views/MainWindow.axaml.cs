@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -53,6 +54,28 @@ public partial class MainWindow : Window
                   , mainWindowViewModel.Sram?.RawBytes ?? throw new EpochEditorAvaloniaSetupException($"Cannot save with null {nameof(mainWindowViewModel.Sram.RawBytes)} or null {nameof(mainWindowViewModel.Sram.RawBytes)}.")
                 );
             }
+        }
+    }
+
+    public void FileSaveAs_OnClick(Object? sender, System.EventArgs args) {
+        if (this.DataContext is MainWindowViewModel mainWindowViewModel) {
+            var sfp = (this._storageProvider ?? throw new EpochEditorAvaloniaSetupException()).SaveFilePickerAsync(new FilePickerSaveOptions {
+                FileTypeChoices = [ new FilePickerFileType("SNES Save RAM File") { Patterns = [ "*.srm" ] }]
+              , Title = "Save SNES Save RAM File…"
+            });
+
+            sfp.ContinueWith(afpTask => {
+                if (afpTask.IsCompletedSuccessfully) {
+                    if (afpTask.Result is IStorageFile file) {
+                        mainWindowViewModel.CurrentPath = file.Path.LocalPath;
+
+                        File.WriteAllBytes(
+                            mainWindowViewModel.CurrentPath ?? throw new EpochEditorAvaloniaSetupException($"Cannot save as with null {nameof(mainWindowViewModel.CurrentPath)}")
+                        , mainWindowViewModel.Sram?.RawBytes ?? throw new EpochEditorAvaloniaSetupException($"Cannot save as with null {nameof(mainWindowViewModel.Sram.RawBytes)} or null {nameof(mainWindowViewModel.Sram.RawBytes)}.")
+                        );
+                    }
+                }
+            });
         }
     }
 }
