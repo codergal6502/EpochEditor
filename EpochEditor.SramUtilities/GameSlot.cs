@@ -16,6 +16,8 @@ public class Sram {
 
     public GameSlot[] GameSlots { get; }
 
+    public Byte LastSaveSlotIndex { get => this.RawBytes[SramConstants.LAST_SAVE_SLOT_INDEX_LOCATION]; set => this.RawBytes[SramConstants.LAST_SAVE_SLOT_INDEX_LOCATION] = value; }
+
     public void UpdateBytes() {
         for(var slotIndex = 0; slotIndex < GameSlots.Length; slotIndex++) {
             var gameSlot = GameSlots[slotIndex];

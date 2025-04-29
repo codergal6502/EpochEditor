@@ -13,6 +13,7 @@ internal class SramConstants {
     public const int CHARACTER_SHEET_LENGTH = 0x050;
     public const int INVENTORY_COUNT_START_OFFSET = 0x100;
     public const int INVENTORY_SIZE = 0x100;
+    public const int LAST_SAVE_SLOT_INDEX_LOCATION = 0x1FE0;
     public static readonly Dictionary<Byte, Char> CT_CHAR_TO_ASCII;
     public static readonly Dictionary<Char, Byte> ASCII_TO_CT_CHAR;
 

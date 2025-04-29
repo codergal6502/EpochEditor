@@ -50,6 +50,8 @@ public class SramReactiveViewModel : ReactiveObject {
 
     public int SlotSelectionIndex { get => _slotSelectionIndex; set { this.RaiseAndSetIfChanged(ref _slotSelectionIndex, value); this.RaisePropertyChanged(nameof(SlotChecksum)); UpdateViewModelForSlot(); } }
 
+    public Byte? LastSaveSlotIndex { get => this._sram?.LastSaveSlotIndex; set { if (null != this._sram && false == SramIsLoading) { this._sram.LastSaveSlotIndex = value ?? 0; }; } }
+
     public int EditorGroupSelectionIndex { get => _editorGroupSelectionIndex; set { this.RaiseAndSetIfChanged(ref _editorGroupSelectionIndex, value); UpdateEditorGroupVisibility(); } }
 
     private void UpdateViewModelFromSram()
@@ -65,6 +67,7 @@ public class SramReactiveViewModel : ReactiveObject {
                 .GameSlots
                 .Select((s, i) => new SlotOption { SlotIndex = i })
                 .ToList();
+        this.RaisePropertyChanged(nameof(LastSaveSlotIndex));
         SramIsLoading = false;
     }
 

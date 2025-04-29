@@ -43,10 +43,20 @@
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>
+            <Label Target="LastSaveSlotComboBox" VerticalAlignment="Center">Played Last Saved: </Label>
+            <ComboBox Name="LastSaveSlotComboBox" ItemsSource="{Binding SlotOptions}" SelectedIndex="{Binding LastSaveSlotIndex}" VerticalAlignment="Center">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding DisplayName}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+        </StackPanel>
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" VerticalAlignment="Bottom">
             <Label Target="SlotChecksumHex" VerticalAlignment="Center">Slot Checksum (Hex): </Label>
-            <TextBox Name="SlotChecksumHex" IsEnabled="False" Text="{Binding SlotChecksum, StringFormat=0x{0:X4}}" VerticalAlignment="Center" />
+            <TextBlock Name="SlotChecksumHex" IsEnabled="False" Text="{Binding SlotChecksum, StringFormat=0x{0:X4}}" VerticalAlignment="Center" />
             <Label Target="SlotChecksumDec" VerticalAlignment="Center">Slot Checksum (Decimal): </Label>
-            <TextBox Name="SlotChecksumDec" IsEnabled="False" Text="{Binding SlotChecksum}" VerticalAlignment="Center" />
+            <TextBlock Name="SlotChecksumDec" IsEnabled="False" Text="{Binding SlotChecksum}" VerticalAlignment="Center" />
         </StackPanel>
         <ItemsRepeater DockPanel.Dock="Top" ItemsSource="{Binding Characters}">
             <ItemsRepeater.ItemTemplate>
