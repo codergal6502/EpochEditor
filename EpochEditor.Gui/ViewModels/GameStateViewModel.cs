@@ -10,13 +10,13 @@ public class GameStateViewModel : ReactiveObject
 {
     private bool _shouldBeVisible;
     private readonly GameSlotViewModel _gameSlotViewModel;
-    private readonly GameSlot? _gameSlot;
+    private readonly GameSlot _gameSlot;
 
     // Display Logic Properties
     public Boolean ShouldBeVisible { get => _shouldBeVisible; set => this.RaiseAndSetIfChanged(ref _shouldBeVisible, value); }
 
 
-    public GameStateViewModel(GameSlotViewModel gameSlotViewModel, GameSlot? gameSlot) {
+    public GameStateViewModel(GameSlotViewModel gameSlotViewModel, GameSlot gameSlot) {
         this._gameSlotViewModel = gameSlotViewModel;
         this._gameSlot = gameSlot;
     }

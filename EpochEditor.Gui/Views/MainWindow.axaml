@@ -50,7 +50,7 @@
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>
-            <Label DockPanel.Dock="Right" Target="LastSaveSlotComboBox" VerticalAlignment="Center">Played Last Saved: </Label>
+            <Label DockPanel.Dock="Right" Target="LastSaveSlotComboBox" VerticalAlignment="Center">Last Save Slot Used: </Label>
             <TextBlock />
         </DockPanel>
         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" VerticalAlignment="Bottom" IsVisible="{Binding HasFileBeenLoaded}">
@@ -128,55 +128,51 @@
                                 </ItemsRepeater.ItemTemplate>
                             </ItemsRepeater>
                         </ScrollViewer>
-                        <Grid ColumnDefinitions="*,*,*,*,*,*,*,*," RowDefinitions="*,*,*,*,*,*,*,*,*," Margin="4" DataContext="{Binding GameStateViewModel}" IsVisible="{Binding ShouldBeVisible}" DockPanel.Dock="Top">
-                            <Label VerticalAlignment="Center" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" Target="PartyMemberOne">Party Member One:</Label>
-                            <ComboBox VerticalAlignment="Center" Grid.Row="0" Grid.Column="1" Name="PartyMemberOne" SelectedIndex="{Binding PartyMemberOneComboBoxIndex}" ItemsSource="{Binding PartyMemberOptions}"> 
+                        <Grid HorizontalAlignment="Left" Width="700" ColumnDefinitions="*,*,*,*" RowDefinitions="*,*,*,*,*" Margin="4" DataContext="{Binding GameStateViewModel}" IsVisible="{Binding ShouldBeVisible}" DockPanel.Dock="Top">
+                            <Label Width="160" VerticalAlignment="Center" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" Target="PartyMemberOne">Party Member One:</Label>
+                            <ComboBox Width="200" VerticalAlignment="Center" Grid.Row="0" Grid.Column="1" Name="PartyMemberOne" SelectedIndex="{Binding PartyMemberOneComboBoxIndex}" ItemsSource="{Binding PartyMemberOptions}"> 
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding DisplayName}" />
                                     </DataTemplate>
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
-                            <TextBox IsEnabled="false" Grid.Row="0" Grid.Column="6" Text="{Binding PartyMemberOneComboBoxIndex}" />
 
-                            <Label VerticalAlignment="Center" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" Target="PartyMemberTwo">Party Member Two:</Label>
-                            <ComboBox VerticalAlignment="Center" Grid.Row="1" Grid.Column="1" Name="PartyMemberTwo" SelectedIndex="{Binding PartyMemberTwoComboBoxIndex}" ItemsSource="{Binding PartyMemberOptions4Bind}"> 
+                            <Label Width="160" VerticalAlignment="Center" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" Target="PartyMemberTwo">Party Member Two:</Label>
+                            <ComboBox Width="200" VerticalAlignment="Center" Grid.Row="1" Grid.Column="1" Name="PartyMemberTwo" SelectedIndex="{Binding PartyMemberTwoComboBoxIndex}" ItemsSource="{Binding PartyMemberOptions4Bind}"> 
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding DisplayName}" />
                                     </DataTemplate>
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
-                            <TextBox IsEnabled="false" Grid.Row="1" Grid.Column="6" Text="{Binding PartyMemberTwoComboBoxIndex}" />
 
-                            <Label VerticalAlignment="Center" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" Target="PartyMemberThree">Party Member Three:</Label>
-                            <ComboBox VerticalAlignment="Center" Grid.Row="2" Grid.Column="1" Name="PartyMemberThree" SelectedIndex="{Binding PartyMemberThreeComboBoxIndex}" ItemsSource="{Binding PartyMemberOptions}"> 
+                            <Label Width="160" VerticalAlignment="Center" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" Target="PartyMemberThree">Party Member Three:</Label>
+                            <ComboBox Width="200" VerticalAlignment="Center" Grid.Row="2" Grid.Column="1" Name="PartyMemberThree" SelectedIndex="{Binding PartyMemberThreeComboBoxIndex}" ItemsSource="{Binding PartyMemberOptions}"> 
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding DisplayName}" />
                                     </DataTemplate>
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
-                            <TextBox IsEnabled="false" Grid.Row="3" Grid.Column="6" Text="{Binding PartyMemberThreeComboBoxIndex}" />
 
-                            <Label VerticalAlignment="Center" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" Target="Gold">Gold:</Label>
-                            <NumericUpDown VerticalAlignment="Center" Grid.Row="0" Grid.Column="3" Name="Gold" Watermark="byte" Minimum="" Maximum="{Binding GOLD_MAX}" Value="{Binding Gold}" Increment="1" FormatString="0" />
+                            <Label Width="100" VerticalAlignment="Center" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" Target="Gold">Gold:</Label>
+                            <NumericUpDown Width="200" VerticalAlignment="Center" Grid.Row="0" Grid.Column="3" Name="Gold" Watermark="byte" Minimum="" Maximum="{Binding GOLD_MAX}" Value="{Binding Gold}" Increment="1" FormatString="0" />
 
-                            <Label VerticalAlignment="Center" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Right" Target="SaveCount">Save Count:</Label>
-                            <NumericUpDown VerticalAlignment="Center" Grid.Row="1" Grid.Column="3" Name="SaveCount" Watermark="byte" Minimum="" Maximum="255" Value="{Binding SaveCount}" Increment="1" FormatString="0" />
+                            <Label Width="100" VerticalAlignment="Center" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Right" Target="SaveCount">Save Count:</Label>
+                            <NumericUpDown Width="200" VerticalAlignment="Center" Grid.Row="1" Grid.Column="3" Name="SaveCount" Watermark="byte" Minimum="" Maximum="255" Value="{Binding SaveCount}" Increment="1" FormatString="0" />
 
-                            <Label VerticalAlignment="Center" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Right" Target="TotalPlayTime">Time:</Label>
-                            <TextBox VerticalAlignment="Center" Grid.Row="2" Grid.Column="3" IsEnabled="False" Name="TotalPlayTime" Text="{Binding TotalPlayTime}" />
+                            <Label Width="100" VerticalAlignment="Center" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Right" Target="TotalPlayTime">Time:</Label>
+                            <TextBox Width="200" VerticalAlignment="Center" Grid.Row="2" Grid.Column="3" IsEnabled="False" Name="TotalPlayTime" Text="{Binding TotalPlayTime}" />
 
-                            <Label VerticalAlignment="Center" Grid.Row="3" Grid.Column="2" HorizontalAlignment="Right" Target="World">World:</Label>
-                            <NumericUpDown IsEnabled="False" VerticalAlignment="Center" Grid.Row="3" Grid.Column="3" Name="World" Watermark="byte" Minimum="" Maximum="65535" Value="{Binding World}" Increment="1" FormatString="0" />
-                            <TextBox IsEnabled="False" Grid.Row="3" Grid.Column="4" Text="{Binding World, StringFormat=0x{0:X4}}" />
+                            <Label Width="100" VerticalAlignment="Center" Grid.Row="3" Grid.Column="2" HorizontalAlignment="Right" Target="World">World:</Label>
+                            <NumericUpDown Width="200" IsEnabled="False" VerticalAlignment="Center" Grid.Row="3" Grid.Column="3" Name="World" Watermark="byte" Minimum="" Maximum="65535" Value="{Binding World}" Increment="1" FormatString="0" />
 
-                            <Label VerticalAlignment="Center" Grid.Row="4" Grid.Column="2" HorizontalAlignment="Right" Target="PlayerX">Player X:</Label>
-                            <NumericUpDown VerticalAlignment="Center" Grid.Row="4" Grid.Column="3" Name="PlayerX" Watermark="byte" Minimum="" Maximum="255" Value="{Binding PlayerX}" Increment="1" FormatString="0" />
+                            <Label Width="100" VerticalAlignment="Center" Grid.Row="4" Grid.Column="2" HorizontalAlignment="Right" Target="PlayerX">Player X:</Label>
+                            <NumericUpDown Width="200" VerticalAlignment="Center" Grid.Row="4" Grid.Column="3" Name="PlayerX" Watermark="byte" Minimum="" Maximum="255" Value="{Binding PlayerX}" Increment="1" FormatString="0" />
 
-                            <Label VerticalAlignment="Center" Grid.Row="5" Grid.Column="2" HorizontalAlignment="Right" Target="PlayerY">Player Y:</Label>
-                            <NumericUpDown VerticalAlignment="Center" Grid.Row="5" Grid.Column="3" Name="PlayerY" Watermark="byte" Minimum="" Maximum="255" Value="{Binding PlayerY}" Increment="1" FormatString="0" />
+                            <Label Width="100" VerticalAlignment="Center" Grid.Row="5" Grid.Column="2" HorizontalAlignment="Right" Target="PlayerY">Player Y:</Label>
+                            <NumericUpDown Width="200" VerticalAlignment="Center" Grid.Row="5" Grid.Column="3" Name="PlayerY" Watermark="byte" Minimum="" Maximum="255" Value="{Binding PlayerY}" Increment="1" FormatString="0" />
                         </Grid>
                     </DockPanel>
                 </DataTemplate>
