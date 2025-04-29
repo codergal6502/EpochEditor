@@ -45,8 +45,10 @@
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
-                <Label Target="SlotChecksum" VerticalAlignment="Center">Slot Checksum: </Label>
-                <TextBox Name="SlotChecksum" IsEnabled="False" Text="{Binding SlotChecksum}" VerticalAlignment="Center" />
+                <Label Target="SlotChecksumHex" VerticalAlignment="Center">Slot Checksum (Hex): </Label>
+                <TextBox Name="SlotChecksumHex" IsEnabled="False" Text="{Binding SlotChecksum, StringFormat=0x{0:X4}}" VerticalAlignment="Center" />
+                <Label Target="SlotChecksumDec" VerticalAlignment="Center">Slot Checksum (Decimal): </Label>
+                <TextBox Name="SlotChecksumDec" IsEnabled="False" Text="{Binding SlotChecksum}" VerticalAlignment="Center" />
             </StackPanel>
             <ItemsRepeater ItemsSource="{Binding Characters}">
                 <ItemsRepeater.ItemTemplate>
