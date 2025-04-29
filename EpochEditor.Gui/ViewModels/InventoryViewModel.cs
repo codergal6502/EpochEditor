@@ -53,6 +53,8 @@ public class InventoryViewModel : ReactiveObject
             GameItemOptions = gameItems;
         }
 
+        public int ItemSlot { get => _itemSlot; }
+
         public int GameItemIndex {
             get {
                 var itemId = _inventory[_itemSlot].ItemId;
@@ -63,10 +65,18 @@ public class InventoryViewModel : ReactiveObject
                 if (false == _sramViewModel.SramIsLoading) {
                     var gameItemOption = GameItemOptions[value];
                     SramUtilities.InventoryItem sramInventoryItem = _inventory[_itemSlot];
+
                     if (gameItemOption.ItemId != sramInventoryItem.ItemId) {
                         sramInventoryItem.ItemId = gameItemOption.ItemId;
                         _sramViewModel.RaiseSlotChecksumChange();
                         this.RaisePropertyChanged();
+
+                        if (0x00 == gameItemOption.ItemId) {
+                            ItemCount = 0;
+                        }
+                        else if (ItemCount == 0) {
+                            ItemCount = 1;
+                        }
                     }
                 }
             }
@@ -78,9 +88,12 @@ public class InventoryViewModel : ReactiveObject
                     _inventory[_itemSlot].ItemCount = value;
                     _sramViewModel.RaiseSlotChecksumChange();
                     this.RaisePropertyChanged();
+                    this.RaisePropertyChanged(nameof(ShouldItemCountBeEnabled));
                 }
             }
         }
+
+        public Boolean ShouldItemCountBeEnabled { get { return ItemCount > 0; }}
 
         public List<GameItem> GameItemOptions { get; }
     }
