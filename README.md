@@ -24,8 +24,7 @@ The console version is currently deprioritized and may be deprecated in the futu
 ### Executing program
 
 * If you're on an ARM64 Mac, you can download the binary. You'll have to allow "Gatekeeper" to launch the application.
-   * For macOS 15 ("Sequoia"), see [these instructions](https://www.idownloadblog.com/2024/08/07/apple-macos-sequoia-gatekeeper-change-install-unsigned-apps-mac/).
-   * For earlier versions of macOS, right-click or control-click on the EpochEditor application, select `Open`, and then select `Open` in the resulting dialog box.
+   * Execute `xattr -dr com.apple.quarantine path/to/EpochEditor.app`, replacing the sample path to the actual path to your downloaded copy of EpochEditor.
 * Otherwise, the fastest way to get started is:
 ```
 dotnet run --project src/EpochEditor.Gui/EpochEditor.Gui.csproj
