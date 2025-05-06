@@ -16,16 +16,22 @@
 
     <NativeMenu.Menu>
         <NativeMenu>
-            <NativeMenuItem Header="File" IsEnabled="true">
+            <NativeMenuItem Header="_File" IsEnabled="true">
                 <NativeMenu>                    
-                    <NativeMenuItem Header="_Open…"     Click="FileOpen_OnClick"   IsEnabled="true"  />
-                    <NativeMenuItem Header="_Save"      Click="FileSave_OnClick"   IsEnabled="{Binding HasFileBeenLoaded}" />
-                    <NativeMenuItem Header="Save _As…"  Click="FileSaveAs_OnClick" IsEnabled="{Binding HasFileBeenLoaded}" />
+                    <NativeMenuItem Header="_Open…"     Click="FileOpen_OnClick"   IsEnabled="true" Gesture="Ctrl+O" />
+                    <NativeMenuItem Header="_Save"      Click="FileSave_OnClick"   IsEnabled="{Binding HasFileBeenLoaded}" Gesture="Ctrl+S" />
+                    <NativeMenuItem Header="Save _As…"  Click="FileSaveAs_OnClick" IsEnabled="{Binding HasFileBeenLoaded}" Gesture="Ctrl+Shift+S"/>
+		    <NativeMenuItemSeparator Header="-" IsVisible="{Binding IsMenuInWindow}" />
+		    <NativeMenuItem Header="About Epoch Editor…" IsVisible="{Binding IsMenuInWindow}" />
+		    <NativeMenuItem Header="Preferences…" IsVisible="{Binding IsMenuInWindow}" />
+		    <NativeMenuItemSeparator Header="-" IsVisible="{Binding IsMenuInWindow}" />
+		    <NativeMenuItem Header="E_xit"      Click="FileExit_OnClick" IsEnabled="true" IsVisible="{Binding IsMenuInWindow}" />
                 </NativeMenu>
             </NativeMenuItem>
         </NativeMenu>
     </NativeMenu.Menu>
     <DockPanel VerticalAlignment="Stretch">
+        <NativeMenuBar DockPanel.Dock="Top" x:Name="MenuBar" />
         <DockPanel DockPanel.Dock="Top" VerticalAlignment="Top">
             <Label DockPanel.Dock="Left" Target="SlotComboBox" VerticalAlignment="Center">Slot: </Label>
             <ComboBox DockPanel.Dock="Left" Name="SlotComboBox" ItemsSource="{Binding SlotOptions}" SelectedIndex="{Binding SlotSelectionIndex}" VerticalAlignment="Center" IsEnabled="{Binding HasFileBeenLoaded}">

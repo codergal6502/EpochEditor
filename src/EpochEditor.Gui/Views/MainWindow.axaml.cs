@@ -67,4 +67,10 @@ public partial class MainWindow : Window
             });
         }
     }
+
+    public void FileExit_OnClick(Object? sender, System.EventArgs args) {
+	if (Application.Current?.ApplicationLifetime is Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktopApplication) {
+	    desktopApplication.Shutdown();
+	}
+    }
 }
