@@ -4,7 +4,7 @@ Epoch Editor is a cross-platform GUI editor for Chrono Trigger SNES Save RAM fil
 
 ## Description
 
-Epoch Editor is a cross-platform GUI editor for Chrono Trigger SNES Save RAM files. It's also a learning project for CoderGal6502!
+Epoch Editor is a cross-platform GUI editor for Chrono Trigger SNES Save RAM files. It's also a learning project for CoderGal6502! It allows you to edit every character's name and statistics as well as your inventory.
 
 ### Console Version
 
