@@ -14,7 +14,8 @@ The console version is currently deprioritized and may be deprecated in the futu
 
 ### Dependencies
 
-* You need .NET 9.0.
+* If you are using the ARM64 Mac binary download, there should be no dependencies.
+* Everyone else needs .NET 9.0 for now.
 
 ### Installing
 
@@ -22,7 +23,10 @@ The console version is currently deprioritized and may be deprecated in the futu
 
 ### Executing program
 
-* The fastest way to get started is:
+* If you're on an ARM64 Mac, you can download the binary. You'll have to allow "Gatekeeper" to launch the application.
+   * For macOS 15 ("Sequoia"), see [these instructions](https://www.idownloadblog.com/2024/08/07/apple-macos-sequoia-gatekeeper-change-install-unsigned-apps-mac/).
+   * For earlier versions of macOS, right-click or control-click on the EpochEditor application, select `Open`, and then select `Open` in the resulting dialog box.
+* Otherwise, the fastest way to get started is:
 ```
 dotnet run --project src/EpochEditor.Gui/EpochEditor.Gui.csproj
 ```
@@ -37,8 +41,8 @@ Feel free to post in [Discussions](https://github.com/codergal6502/EpochEditor/d
 
 ## Version History
 
-* 0.0.0
-    * No versions have been released yet.
+* 0.1.0
+    * Binary for macOS ARM64 released.
 
 ## License
 
