@@ -23,7 +23,7 @@ The console version is currently deprioritized and may be deprecated in the futu
 
 ### Executing program
 
-* If you're on an ARM64 Mac, you can download the binary. You'll have to allow "Gatekeeper" to launch the application.
+* If you're on an ARM64 Mac, you can download the binary. You may need to allow "Gatekeeper" to launch the application or need to dequarantine the application:
    * Execute `xattr -dr com.apple.quarantine path/to/EpochEditor.app`, replacing the sample path to the actual path to your downloaded copy of EpochEditor.
 * Otherwise, the fastest way to get started is:
 ```
