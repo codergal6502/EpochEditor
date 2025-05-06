@@ -58,5 +58,6 @@ cp LICENSE "$DIST"
 
 # See https://developer.apple.com/documentation/xcode/packaging-mac-software-for-distribution.
 ditto -c -k --keepParent "$DIST" "$DIST.zip"
+hdiutil create -volname EpochEditor -srcfolder "$DIST" -ov -format UDZO "$DIST.dmg"
 
-echo "The application is at $DIST.zip."
+echo "The application is at $DIST.zip and at $DIST.dmg."
