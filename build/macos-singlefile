@@ -1,0 +1,62 @@
+#!/bin/bash
+set -x #echo on
+
+ROOT="$(dirname "$0")/.."
+CSPROJ="$ROOT/src/EpochEditor.Gui/EpochEditor.Gui.csproj"
+
+ASSETS="$ROOT/build/assets/macos-gui-single-file"
+
+DIST="$ROOT/build/output/macos-gui-single-file/EpochEditor"
+BUNDLE="$DIST/EpochEditor.app"
+CONTENTS="$BUNDLE/Contents"
+MACOS="$CONTENTS/MacOS"
+RESOURCES="$CONTENTS/Resources"
+
+if [ -d "$BUNDLE" ]; then
+    rm -rf "$DIST"
+fi
+
+VERSION="$(plutil -extract VersionNumber raw $ROOT/application-metadata.json)"
+TIMESTAMP="$(date +"%Y%m%d%H%M%S")"
+LONGVERSION="$VERSION.$TIMESTAMP"
+
+mkdir -p "$MACOS"
+dotnet publish "$CSPROJ" -r osx-arm64 "/p:PublishSingleFile=true" "/p:Version=$VERSION" --configuration release -o "$MACOS"
+
+mkdir -p "$RESOURCES"
+cp "$ASSETS/epoch.icns" "$RESOURCES"
+
+chmod +x "$MACOS/EpochEditor.gui"
+
+# Copying the plist file before dotnet publish results in intermittent build failures with:
+#
+# + dotnet publish ./build/../src/EpochEditor.Gui/EpochEditor.Gui.csproj -r osx-arm64 /p:PublishSingleFile=true --configuration release -o ./build/../build/output/macos-gui-single-file/EpochEditor.app/Contents/MacOS
+# Restore complete (0.2s)
+#   EpochEditor.SramUtilities succeeded (0.1s) → src/EpochEditor.SramUtilities/bin/release/net9.0/EpochEditor.SramUtilities.dll
+#   EpochEditor.Gui failed with 1 error(s) (0.5s) → src/EpochEditor.Gui/bin/release/net9.0/osx-arm64/EpochEditor.Gui.dll
+#     /usr/local/share/dotnet/sdk/9.0.202/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.Publish.targets(1116,5): error MSB4018: 
+#       The "GenerateBundle" task failed unexpectedly.
+#       System.InvalidOperationException: Failed to codesign '/Users/lucca/Desktop/coding-projects/epoch-editor/build/output/macos-gui-single-file/EpochEditor.app/Contents/MacOS/EpochEditor.G
+#       ui': /Users/lucca/Desktop/coding-projects/epoch-editor/build/output/macos-gui-single-file/EpochEditor.app/Contents/MacOS/EpochEditor.Gui: is already signed
+#      
+#          at Microsoft.NET.HostModel.Bundle.Bundler.GenerateBundle(IReadOnlyList`1 fileSpecs)
+#          at Microsoft.NET.Build.Tasks.GenerateBundle.ExecuteCore()
+#          at Microsoft.NET.Build.Tasks.TaskBase.Execute()
+#          at Microsoft.Build.BackEnd.TaskExecutionHost.Execute()
+#          at Microsoft.Build.BackEnd.TaskBuilder.ExecuteInstantiatedTask(TaskExecutionHost taskExecutionHost, TaskLoggingContext taskLoggingContext, TaskHost taskHost, ItemBucket bucket, Tas
+#       kExecutionMode howToExecuteTask)
+#
+# Build failed with 1 error(s) in 1.1s
+
+mkdir -p "$CONTENTS"
+cp "$ASSETS/Info.plist" "$CONTENTS"
+
+sed -i '' -e "s/PLACEHOLDER-CFBundleShortVersionString/$VERSION/g" "$CONTENTS/Info.plist"
+sed -i '' -e "s/PLACEHOLDER-CFBundleVersion/$LONGVERSION/g" "$CONTENTS/Info.plist"
+
+cp LICENSE "$DIST"
+
+# See https://developer.apple.com/documentation/xcode/packaging-mac-software-for-distribution.
+ditto -c -k --keepParent "$DIST" "$DIST.zip"
+
+echo "The application is at $DIST.zip."

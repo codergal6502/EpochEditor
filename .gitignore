@@ -18,3 +18,6 @@ bld/
 
 # .vscode -- not sure if ignoring this makes sense!
 .vscode
+
+# Epoch Editor Build Output
+build/output
