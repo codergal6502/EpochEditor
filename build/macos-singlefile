@@ -12,7 +12,7 @@ CONTENTS="$BUNDLE/Contents"
 MACOS="$CONTENTS/MacOS"
 RESOURCES="$CONTENTS/Resources"
 
-if [ -d "$BUNDLE" ]; then
+if [ -d "$DIST" ]; then
     rm -rf "$DIST"
 fi
 
