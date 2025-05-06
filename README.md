@@ -42,7 +42,7 @@ Feel free to post in [Discussions](https://github.com/codergal6502/EpochEditor/d
 
 ## License
 
-This project is licensed under the [GNU GENERAL PUBLIC LICENSE Version 3] License - see the LICENSE.md file for details.
+This project is licensed under the [GNU GENERAL PUBLIC LICENSE Version 3] License - see the [LICENSE](https://github.com/codergal6502/EpochEditor/blob/main/LICENSE) file for details.
 
 ## Acknowledgments
 
