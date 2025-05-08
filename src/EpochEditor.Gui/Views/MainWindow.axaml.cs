@@ -69,7 +69,10 @@ public partial class MainWindow : Window
     }
 
     private void FileAbout_OnClick(Object? sender, EventArgs args) {
-        
+        var dialog = new AboutEpochEditorWindow();
+        dialog.DataContext = new AboutEpochEditorViewModel();
+	
+        dialog.ShowDialog(this);
     }
     private void FilePreferences_OnClick(Object? sender, EventArgs args) {
         

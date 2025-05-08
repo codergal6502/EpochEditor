@@ -17,8 +17,8 @@ fi
 VERSION="$(xmllint $ROOT/src/Directory.Build.props --xpath '/Project/PropertyGroup/Version/text()')"
 
 # See https://learn.microsoft.com/en-us/archive/blogs/msbuild/why-are-build-numbers-limited-to-65535.
-# This variable is minutes since the UNIX epoch.
-EPOCH=$(($(date +%s)/1000/60))
+# This variable is days since the UNIX epoch.
+EPOCH=$(($(date +%s)/3600/24))
 LONGVERSION="$VERSION.$EPOCH"
 
 mkdir -p "$APPDIR"
