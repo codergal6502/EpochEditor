@@ -1,0 +1,14 @@
+<Project>
+  <PropertyGroup>
+    <!-- By convention, Epoch Editor uses semantic versioning for the assembly
+       - version with no revision (fourth) number. That is used as a build
+       - number set dynamically by release build scripts.
+       - 
+       - Also, see https://github.com/dotnet/sdk/issues/39214#issuecomment-2024568399
+       -->
+    <Version>0.1.0</Version>
+    <FileVersion>0.1.0.0</FileVersion>
+    <InformationalVersion>0.1.0.0 (Debug Build)</InformationalVersion>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+  </PropertyGroup>
+</Project>

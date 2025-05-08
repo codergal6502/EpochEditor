@@ -12,16 +12,19 @@ CONTENTS="$BUNDLE/Contents"
 MACOS="$CONTENTS/MacOS"
 RESOURCES="$CONTENTS/Resources"
 
-if [ -d "$DIST" ]; then
-    rm -rf "$DIST"
+if [ -d "$ROOT/build/output/macos-gui-single-file/EpochEditor" ]; then
+    rm -rf "$ROOT/build/output/macos-gui-single-file/EpochEditor"
 fi
 
-VERSION="$(plutil -extract VersionNumber raw $ROOT/application-metadata.json)"
-TIMESTAMP="$(date +"%Y%m%d%H%M%S")"
-LONGVERSION="$VERSION.$TIMESTAMP"
+VERSION="$(xmllint $ROOT/src/Directory.Build.props --xpath '/Project/PropertyGroup/Version/text()')"
+
+# See https://learn.microsoft.com/en-us/archive/blogs/msbuild/why-are-build-numbers-limited-to-65535.
+# This variable is minutes since the UNIX epoch.
+EPOCH=$(($(date +%s)/1000/60))
+LONGVERSION="$VERSION.$EPOCH"
 
 mkdir -p "$MACOS"
-dotnet publish "$CSPROJ" -r osx-arm64 "/p:PublishSingleFile=true" "/p:Version=$VERSION" --configuration release -o "$MACOS"
+dotnet publish "$CSPROJ" -r osx-arm64 "/p:PublishSingleFile=true" "/p:Version=$VERSION" "/p:FileVersion=$LONGVERSION" "/p:InformationalVersion=$LONGVERSION (Single-File Application)" --configuration release -o "$MACOS"
 
 mkdir -p "$RESOURCES"
 cp "$ASSETS/epoch.icns" "$RESOURCES"

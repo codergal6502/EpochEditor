@@ -53,8 +53,16 @@ public partial class App : Application
     }
 
     private void ApplicationAbout_OnClick(Object? sender, EventArgs args) {
-        
+
+        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        {
+            var dialog = new AboutEpochEditorWindow();
+            dialog.DataContext = new AboutEpochEditorViewModel();
+
+            dialog.ShowDialog(desktop.MainWindow ?? throw new EpochEditorAvaloniaSetupException("Desktop applicatiomn lifetime main window is null."));   
+        }
     }
+
     private void ApplicationPreferences_OnClick(Object? sender, EventArgs args) {
         
     }
