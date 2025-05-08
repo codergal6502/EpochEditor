@@ -16,6 +16,9 @@ bld/
 # macOS Files
 **/.DS_Store
 
+# emacs
+*~
+
 # .vscode -- not sure if ignoring this makes sense!
 .vscode
 

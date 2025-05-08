@@ -1,0 +1,36 @@
+#!/bin/bash
+set -x #echo on
+
+ROOT="$(dirname "$0")/.."
+CSPROJ="$ROOT/src/EpochEditor.Gui/EpochEditor.Gui.csproj"
+
+ASSETS="$ROOT/build/assets/linux-gui-single-file"
+
+DIST="$ROOT/build/output/linux-gui-single-file/EpochEditor"
+APPDIR="$DIST/AppDir"
+USRBIN="$APPDIR/usr/bin"
+
+if [ -d "$ROOT/build/output/linux-gui-single-file/EpochEditor" ]; then
+    rm -rf "$ROOT/build/output/linux-gui-single-file/EpochEditor"
+fi
+
+VERSION="$(xmllint $ROOT/src/Directory.Build.props --xpath '/Project/PropertyGroup/Version/text()')"
+
+# See https://learn.microsoft.com/en-us/archive/blogs/msbuild/why-are-build-numbers-limited-to-65535.
+# This variable is minutes since the UNIX epoch.
+EPOCH=$(($(date +%s)/1000/60))
+LONGVERSION="$VERSION.$EPOCH"
+
+mkdir -p "$APPDIR"
+mkdir -p "$USRBIN"
+dotnet publish "$CSPROJ" -r linux-x64 "/p:PublishSingleFile=true" "/p:Version=$VERSION" "/p:FileVersion=$LONGVERSION" "/p:InformationalVersion=$LONGVERSION (Single-File Application)" --configuration release -o "$USRBIN"
+
+cp "$ASSETS/epoch-editor.desktop" "$APPDIR"
+cp "$ASSETS/epoch.png" "$APPDIR/epoch-editor.png"
+cp "$ASSETS/AppRun" "$APPDIR"
+
+chmod +x "$USRBIN/EpochEditor.Gui"
+chmod +x "$APPDIR/AppRun"
+
+ARCH=x86_64 appimagetool-x86_64.AppImage "$APPDIR" "$DIST/EpochEditor.AppImage"
+chmod +x "$DIST/EpochEditor.AppImage"
