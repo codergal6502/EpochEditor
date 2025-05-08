@@ -15,7 +15,7 @@ The console version is currently deprioritized and may be deprecated in the futu
 ### Dependencies
 
 * If you are using the ARM64 Mac binary download or the Linux x64 binary, there should be no dependencies.
-* Everyone else needs .NET 9.0 for now.
+* Everyone else needs .NET 9.0 for now, including if you are downloading the Windows executable.
 
 #### Buliding Releases
 * To build Mac or Linux releases, you'll need `xmllint`.
@@ -23,15 +23,19 @@ The console version is currently deprioritized and may be deprecated in the futu
 
 ### Installing
 
-* You can currently download binaries for Mac (in a `.dmg` disk image) and Linux (as an AppImage).
-* A Windows executable download (in a ZIP file) is planned.
+* You can currently download binaries:
+   * for Mac (in a `.dmg` disk image),
+   * for Linux (as an AppImage), and
+   * for Windows (in a ZIP file).
 
 ### Executing program
 
 * If you're on an ARM64 Mac, you can download the binary. You may need to allow "Gatekeeper" to launch the application or need to dequarantine the application:
    * Execute `xattr -dr com.apple.quarantine path/to/EpochEditor.app`, replacing the sample path to the actual path to your downloaded copy of EpochEditor.
 * If you're on x64 Linux, you can download the AppImage.
-* Otherwise, the fastest way to get started is:
+* If you're on Windows, you can download the ZIP file. You'll need to install [.NET 9](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) if it's not already installed.
+   * No testing on Windows has been done; only cursory testing has been done using WINE.
+* You can also run the project from source:
 ```
 dotnet run --project src/EpochEditor.Gui/EpochEditor.Gui.csproj
 ```
@@ -48,6 +52,7 @@ Feel free to post in [Discussions](https://github.com/codergal6502/EpochEditor/d
 
 * 0.1.1
     * Binary for Linux x64 released; "About" dialog implemented.
+    * Executable for Windows released.
 * 0.1.0
     * Binary for macOS ARM64 released.
 
