@@ -19,6 +19,7 @@ The console version is currently deprioritized and may be deprecated in the futu
 
 #### Buliding Releases
 * To build Mac or Linux releases, you'll need `xmllint`.
+* To build x86-64 Linux releases, you'll need `appimagetool-x86_64.AppImage` in your `PATH`, e.g., in `$HOME/bin`.
 
 ### Installing
 
