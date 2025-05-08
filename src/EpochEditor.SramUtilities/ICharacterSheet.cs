@@ -39,7 +39,7 @@ public interface ICharacterSheet
     [CharacterSheetProperty(0x29)]
     public Byte Weapon { get; set; }
     [CharacterSheetProperty(0x2A)]
-    public Byte Relic { get; set; }
+    public Byte Accessory { get; set; }
     [CharacterSheetProperty(0x2B)]
     public Int16 ExpToLevel { get; set; }
     [CharacterSheetProperty(0x36)]

@@ -39,7 +39,7 @@ public class CharacterSheet : ICharacterSheet
 
     public Byte Weapon { get; set; }
 
-    public Byte Relic { get; set; }
+    public Byte Accessory { get; set; }
 
     public Int16 ExpToLevel { get; set; }
 
