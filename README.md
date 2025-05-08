@@ -17,6 +17,9 @@ The console version is currently deprioritized and may be deprecated in the futu
 * If you are using the ARM64 Mac binary download, there should be no dependencies.
 * Everyone else needs .NET 9.0 for now.
 
+#### Buliding Releases
+* To build Mac or Linux releases, you'll need `xmllint`.
+
 ### Installing
 
 * Downloadable applications are planned for Linux (as an AppImage), macOS (as an application bundle in a ZIP or DMG file), and a Windows executable (in a ZIP file).
