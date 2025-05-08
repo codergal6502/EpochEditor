@@ -14,12 +14,12 @@ The console version is currently deprioritized and may be deprecated in the futu
 
 ### Dependencies
 
-* If you are using the ARM64 Mac binary download, there should be no dependencies.
+* If you are using the ARM64 Mac binary download or the Linux x64 binary, there should be no dependencies.
 * Everyone else needs .NET 9.0 for now.
 
 #### Buliding Releases
 * To build Mac or Linux releases, you'll need `xmllint`.
-* To build x86-64 Linux releases, you'll need [`appimagetool-x86_64.AppImage`](https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage) in your `PATH`, e.g., in `$HOME/bin`.
+* To build Linux releases, you'll need [`appimagetool-x86_64.AppImage`](https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage) in your `PATH`, e.g., in `$HOME/bin`.
 
 ### Installing
 
@@ -30,7 +30,7 @@ The console version is currently deprioritized and may be deprecated in the futu
 
 * If you're on an ARM64 Mac, you can download the binary. You may need to allow "Gatekeeper" to launch the application or need to dequarantine the application:
    * Execute `xattr -dr com.apple.quarantine path/to/EpochEditor.app`, replacing the sample path to the actual path to your downloaded copy of EpochEditor.
-* If you're on x86-64 Linux, you can download the AppImage.
+* If you're on x64 Linux, you can download the AppImage.
 * Otherwise, the fastest way to get started is:
 ```
 dotnet run --project src/EpochEditor.Gui/EpochEditor.Gui.csproj
@@ -46,6 +46,8 @@ Feel free to post in [Discussions](https://github.com/codergal6502/EpochEditor/d
 
 ## Version History
 
+* 0.1.1
+    * Binary for Linux x64 released; "About" dialog implemented.
 * 0.1.0
     * Binary for macOS ARM64 released.
 
