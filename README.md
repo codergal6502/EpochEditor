@@ -23,7 +23,8 @@ The console version is currently deprioritized and may be deprecated in the futu
 
 ### Installing
 
-* Downloadable applications are planned for Linux (as an AppImage), macOS (as an application bundle in a ZIP or DMG file), and a Windows executable (in a ZIP file).
+* You can currently download binaries for Mac (in a `.dmg` disk image) and Linux (as an AppImage).
+* A Windows executable download (in a ZIP file) is planned.
 
 ### Executing program
 
