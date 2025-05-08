@@ -1,5 +1,6 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:c="using:EpochEditor.Gui.CustomControls"
         xmlns:vm="using:EpochEditor.Gui.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -18,14 +19,16 @@
         <NativeMenu>
             <NativeMenuItem Header="_File" IsEnabled="true">
                 <NativeMenu>                    
-                    <NativeMenuItem Header="_Open…"     Click="FileOpen_OnClick"   IsEnabled="true" Gesture="Ctrl+O" />
-                    <NativeMenuItem Header="_Save"      Click="FileSave_OnClick"   IsEnabled="{Binding HasFileBeenLoaded}" Gesture="Ctrl+S" />
-                    <NativeMenuItem Header="Save _As…"  Click="FileSaveAs_OnClick" IsEnabled="{Binding HasFileBeenLoaded}" Gesture="Ctrl+Shift+S"/>
-		    <NativeMenuItemSeparator Header="-" IsVisible="{Binding IsMenuInWindow}" />
-		    <NativeMenuItem Header="About Epoch Editor…" IsVisible="{Binding IsMenuInWindow}" />
-		    <NativeMenuItem Header="Preferences…" IsVisible="{Binding IsMenuInWindow}" />
-		    <NativeMenuItemSeparator Header="-" IsVisible="{Binding IsMenuInWindow}" />
-		    <NativeMenuItem Header="E_xit"      Click="FileExit_OnClick" IsEnabled="true" IsVisible="{Binding IsMenuInWindow}" />
+                    <c:AutoModifierMenuItem Header="_Open…"    AutoModifierGesture="O"       Click="FileOpen_OnClick"   />
+                    <c:AutoModifierMenuItem Header="_Save"     AutoModifierGesture="S"       Click="FileSave_OnClick"   IsEnabled="{Binding HasFileBeenLoaded}" />
+                    <c:AutoModifierMenuItem Header="Save _As…" AutoModifierGesture="Shift+S" Click="FileSaveAs_OnClick" IsEnabled="{Binding HasFileBeenLoaded}" />
+
+                    <NativeMenuItemSeparator                           IsVisible="{Binding PlatformUtilities.IsMenuInWindow}" />
+                    <NativeMenuItem Header="About Epoch Editor…"       IsVisible="{Binding PlatformUtilities.IsMenuInWindow}" Click="FileAbout_OnClick" />
+                    <NativeMenuItem Header="Preferences…"              IsVisible="{Binding PlatformUtilities.IsMenuInWindow}" Click="FilePreferences_OnClick" />
+                    <NativeMenuItemSeparator                           IsVisible="{Binding PlatformUtilities.IsMenuInWindow}" />
+                    <NativeMenuItem Header="E_xit"                     IsVisible="{Binding PlatformUtilities.IsWindows}"      Click="FileExit_OnClick" />
+                    <NativeMenuItem Header="_Quit" Gesture="Control+Q" IsVisible="{Binding PlatformUtilities.IsLinux}"        Click="FileExit_OnClick" />
                 </NativeMenu>
             </NativeMenuItem>
         </NativeMenu>

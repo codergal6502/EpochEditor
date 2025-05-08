@@ -51,4 +51,11 @@ public partial class App : Application
             BindingPlugins.DataValidators.Remove(plugin);
         }
     }
+
+    private void ApplicationAbout_OnClick(Object? sender, EventArgs args) {
+        
+    }
+    private void ApplicationPreferences_OnClick(Object? sender, EventArgs args) {
+        
+    }
 }

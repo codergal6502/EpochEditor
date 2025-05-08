@@ -68,9 +68,16 @@ public partial class MainWindow : Window
         }
     }
 
+    private void FileAbout_OnClick(Object? sender, EventArgs args) {
+        
+    }
+    private void FilePreferences_OnClick(Object? sender, EventArgs args) {
+        
+    }
+
     public void FileExit_OnClick(Object? sender, System.EventArgs args) {
-	if (Application.Current?.ApplicationLifetime is Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktopApplication) {
-	    desktopApplication.Shutdown();
-	}
+        if (Application.Current?.ApplicationLifetime is Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktopApplication) {
+            desktopApplication.Shutdown();
+        }
     }
 }

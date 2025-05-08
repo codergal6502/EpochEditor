@@ -25,9 +25,8 @@ public partial class MainWindowViewModel : ReactiveObject
         }
     }    
     public bool HasFileBeenLoaded { get => !String.IsNullOrWhiteSpace(CurrentPath); } 
+    public PlatformUtilities PlatformUtilities { get => PlatformUtilities.Instance; }
 
-    public bool IsMenuInWindow { get => false == System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.OSX); }
-    
     public int SlotSelectionIndex {
         get => _slotSelectionIndex;
         set {

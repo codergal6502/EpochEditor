@@ -1,5 +1,7 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:EpochEditor.Gui.ViewModels"
+             x:DataType="vm:AppViewModel"
              x:Class="EpochEditor.Gui.App"
              xmlns:local="using:EpochEditor.Gui"
              RequestedThemeVariant="Default"
@@ -13,8 +15,8 @@
 
     <NativeMenu.Menu>
         <NativeMenu>
-            <NativeMenuItem Header="About Epoch Editor" />
-            <NativeMenuItem Header="Preferences…" />
+            <NativeMenuItem Header="About Epoch Editor…" Click="ApplicationAbout_OnClick"       IsVisible="{Binding PlatformUtilities.HasApplicationMenu}" />
+            <NativeMenuItem Header="Preferences…"        Click="ApplicationPreferences_OnClick" IsVisible="{Binding PlatformUtilities.HasApplicationMenu}" />
         </NativeMenu>
     </NativeMenu.Menu>
 
